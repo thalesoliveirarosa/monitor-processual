@@ -3,120 +3,93 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monitor Processual — Thales Oliveira Rosa</title>
+<title>Monitor Processual · Cardoso Rosa & Capuzzo</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
-
   :root {
-    --bg: #0a0a0f; --surface: #111118; --surface2: #16161f;
-    --border: #1e1e2e; --border2: #2a2a3e;
-    --amber: #f59e0b; --green: #10b981; --red: #ef4444;
-    --blue: #3b82f6; --purple: #8b5cf6; --cyan: #06b6d4;
-    --orange: #f97316; --text: #e2e8f0; --text-dim: #64748b; --text-muted: #334155;
-    --mono: 'IBM Plex Mono', monospace; --sans: 'IBM Plex Sans', sans-serif;
+    --bg:#0a0a0f; --surface:#111118; --surface2:#16161f;
+    --border:#1e1e2e; --border2:#2a2a3e;
+    --amber:#f59e0b; --green:#10b981; --red:#ef4444;
+    --blue:#3b82f6; --purple:#8b5cf6; --cyan:#06b6d4; --orange:#f97316;
+    --text:#e2e8f0; --text-dim:#64748b; --text-muted:#334155;
+    --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans',sans-serif;
   }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
-
-  /* HEADER */
-  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; }
-  .brand { display: flex; align-items: center; gap: 10px; }
-  .brand-dot { width: 8px; height: 8px; background: var(--amber); border-radius: 50%; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.4)} 50%{box-shadow:0 0 0 6px rgba(245,158,11,0)} }
-  .brand-title { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--amber); text-transform: uppercase; letter-spacing: .05em; }
-  .brand-sub { font-family: var(--mono); font-size: 10px; color: var(--text-dim); }
-  .btn-refresh { font-family: var(--mono); font-size: 11px; font-weight: 600; padding: 7px 16px; background: var(--amber); color: #000; border: none; border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: .05em; transition: all .15s; }
-  .btn-refresh:hover { background: #fbbf24; }
-  .btn-refresh:disabled { opacity: .5; cursor: not-allowed; }
-
-  /* STATS */
-  .stats { display: flex; gap: 12px; padding: 20px 24px; flex-wrap: wrap; background: var(--surface); border-bottom: 1px solid var(--border); }
-  .stat { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 14px 18px; cursor: pointer; transition: all .15s; position: relative; overflow: hidden; min-width: 100px; }
-  .stat::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
-  .stat:hover, .stat.active { border-color: var(--border2); transform: translateY(-1px); }
-  .stat-val { font-family: var(--mono); font-size: 26px; font-weight: 700; line-height: 1; }
-  .stat-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: .08em; color: var(--text-dim); margin-top: 4px; }
-  .stat.s-todos::before { background: var(--amber); } .stat.s-todos .stat-val { color: var(--amber); }
-  .stat.s-sentenca::before { background: #dc2626; } .stat.s-sentenca .stat-val { color: #dc2626; }
-  .stat.s-decisao::before { background: var(--red); } .stat.s-decisao .stat-val { color: var(--red); }
-  .stat.s-despacho::before { background: var(--orange); } .stat.s-despacho .stat-val { color: var(--orange); }
-  .stat.s-prazo::before { background: var(--amber); } .stat.s-prazo .stat-val { color: var(--amber); }
-  .stat.s-audiencia::before { background: var(--purple); } .stat.s-audiencia .stat-val { color: var(--purple); }
-  .stat.s-contestacao::before { background: var(--cyan); } .stat.s-contestacao .stat-val { color: var(--cyan); }
-  .stat.s-publicacao::before { background: var(--green); } .stat.s-publicacao .stat-val { color: var(--green); }
-  .stat.s-andamento::before { background: var(--blue); } .stat.s-andamento .stat-val { color: var(--blue); }
-
-  /* FILTERS */
-  .filters { padding: 16px 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; border-bottom: 1px solid var(--border); }
-  .filter-group { display: flex; align-items: center; gap: 8px; }
-  .filter-label { font-family: var(--mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .06em; white-space: nowrap; }
-  select, input[type=text], input[type=date] {
-    background: var(--surface2); border: 1px solid var(--border2); border-radius: 4px;
-    padding: 7px 10px; font-family: var(--mono); font-size: 11px; color: var(--text);
-    outline: none; transition: border-color .15s;
-  }
-  select:focus, input:focus { border-color: var(--amber); }
-  .btn-clear { font-family: var(--mono); font-size: 10px; padding: 7px 12px; background: transparent; border: 1px solid var(--border2); border-radius: 4px; color: var(--text-dim); cursor: pointer; transition: all .15s; text-transform: uppercase; letter-spacing: .05em; }
-  .btn-clear:hover { border-color: var(--amber); color: var(--amber); }
-
-  /* TABLE */
-  .main { padding: 20px 24px; }
-  .table-wrap { overflow-x: auto; border-radius: 6px; border: 1px solid var(--border); }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead tr { background: var(--surface2); border-bottom: 2px solid var(--border2); }
-  th { padding: 10px 14px; text-align: left; font-family: var(--mono); font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .07em; font-weight: 600; white-space: nowrap; cursor: pointer; user-select: none; }
-  th:hover { color: var(--amber); }
-  tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
-  tbody tr:hover { background: var(--surface2); }
-  td { padding: 10px 14px; vertical-align: top; }
-  .td-numero { font-family: var(--mono); font-size: 11px; white-space: nowrap; }
-  .td-numero a { color: var(--amber); text-decoration: none; }
-  .td-numero a:hover { color: #fbbf24; text-decoration: underline; }
-  .td-tribunal { font-family: var(--mono); font-size: 10px; color: var(--text-dim); margin-top: 3px; }
-  .td-parte { font-size: 12px; color: var(--text); }
-  .td-parte-label { font-family: var(--mono); font-size: 9px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .05em; }
-  .td-resumo { font-size: 12px; color: var(--text); line-height: 1.5; max-width: 300px; }
-  .td-data { font-family: var(--mono); font-size: 10px; color: var(--text-dim); white-space: nowrap; }
-
-  /* BADGES */
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-family: var(--mono); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
-  .b-sentenca    { background: #fee2e2; color: #dc2626; }
-  .b-decisao     { background: #fef2f2; color: #ef4444; }
-  .b-despacho    { background: #fff7ed; color: #f97316; }
-  .b-prazo       { background: #fffbeb; color: #f59e0b; }
-  .b-audiencia   { background: #f5f3ff; color: #8b5cf6; }
-  .b-contestacao { background: #ecfeff; color: #06b6d4; }
-  .b-publicacao  { background: #ecfdf5; color: #10b981; }
-  .b-andamento   { background: #eff6ff; color: #3b82f6; }
-
-  /* STATES */
-  .state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; gap: 12px; }
-  .state-icon { font-size: 40px; opacity: .3; }
-  .state-title { font-family: var(--mono); font-size: 13px; color: var(--text-dim); text-transform: uppercase; letter-spacing: .06em; }
-  .state-sub { font-size: 12px; color: var(--text-muted); text-align: center; max-width: 400px; line-height: 1.6; }
-
-  /* COUNT */
-  .result-count { font-family: var(--mono); font-size: 11px; color: var(--text-dim); margin-bottom: 12px; }
-
-  /* SPINNER */
-  .spinner { width: 14px; height: 14px; border: 2px solid rgba(0,0,0,.2); border-top-color: #000; border-radius: 50%; animation: spin .6s linear infinite; display: inline-block; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* FOOTER */
-  .footer { padding: 20px 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-  .footer-text { font-family: var(--mono); font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
-  .footer-link { font-family: var(--mono); font-size: 10px; color: var(--amber); text-decoration: none; text-transform: uppercase; letter-spacing: .05em; }
-  .footer-link:hover { text-decoration: underline; }
-
-  @media (max-width: 768px) {
-    .stats { gap: 8px; padding: 12px 16px; }
-    .stat { padding: 10px 14px; min-width: 80px; }
-    .filters { padding: 12px 16px; }
-    .main { padding: 12px 16px; }
-    .header { padding: 0 16px; }
-    .brand-sub { display: none; }
-  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh}
+  .header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-dot{width:8px;height:8px;background:var(--amber);border-radius:50%;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.4)}50%{box-shadow:0 0 0 6px rgba(245,158,11,0)}}
+  .brand-title{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:.05em}
+  .brand-sub{font-family:var(--mono);font-size:10px;color:var(--text-dim)}
+  .adv-badges{display:flex;gap:8px}
+  .adv-badge{font-family:var(--mono);font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid transparent;opacity:.6}
+  .adv-badge.active,.adv-badge:hover{opacity:1;transform:translateY(-1px)}
+  .adv-t{background:rgba(245,158,11,.1);color:var(--amber);border-color:rgba(245,158,11,.3)}
+  .adv-a{background:rgba(139,92,246,.1);color:var(--purple);border-color:rgba(139,92,246,.3)}
+  .adv-m{background:rgba(16,185,129,.1);color:var(--green);border-color:rgba(16,185,129,.3)}
+  .btn-refresh{font-family:var(--mono);font-size:11px;font-weight:600;padding:8px 16px;background:var(--amber);color:#000;border:none;border-radius:4px;cursor:pointer;text-transform:uppercase;letter-spacing:.05em;transition:all .15s}
+  .btn-refresh:hover{background:#fbbf24}
+  .btn-refresh:disabled{opacity:.5;cursor:not-allowed}
+  .stats{display:flex;gap:10px;padding:16px 24px;flex-wrap:wrap;background:var(--surface);border-bottom:1px solid var(--border)}
+  .stat{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px 16px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;min-width:90px}
+  .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .stat:hover,.stat.active{border-color:var(--border2);transform:translateY(-1px)}
+  .stat-val{font-family:var(--mono);font-size:24px;font-weight:700;line-height:1}
+  .stat-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-top:4px}
+  .s-todos::before{background:var(--amber)}.s-todos .stat-val{color:var(--amber)}
+  .s-sentenca::before{background:#dc2626}.s-sentenca .stat-val{color:#dc2626}
+  .s-decisao::before{background:var(--red)}.s-decisao .stat-val{color:var(--red)}
+  .s-despacho::before{background:var(--orange)}.s-despacho .stat-val{color:var(--orange)}
+  .s-prazo::before{background:var(--amber)}.s-prazo .stat-val{color:var(--amber)}
+  .s-audiencia::before{background:var(--purple)}.s-audiencia .stat-val{color:var(--purple)}
+  .s-contestacao::before{background:var(--cyan)}.s-contestacao .stat-val{color:var(--cyan)}
+  .s-publicacao::before{background:var(--green)}.s-publicacao .stat-val{color:var(--green)}
+  .s-andamento::before{background:var(--blue)}.s-andamento .stat-val{color:var(--blue)}
+  .filters{padding:14px 24px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--border)}
+  .fl{display:flex;align-items:center;gap:8px}
+  .fl-label{font-family:var(--mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+  select,input[type=text],input[type=date]{background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:7px 10px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;transition:border-color .15s}
+  select:focus,input:focus{border-color:var(--amber)}
+  .btn-c{font-family:var(--mono);font-size:10px;padding:7px 12px;background:transparent;border:1px solid var(--border2);border-radius:4px;color:var(--text-dim);cursor:pointer;transition:all .15s;text-transform:uppercase}
+  .btn-c:hover{border-color:var(--amber);color:var(--amber)}
+  .main{padding:20px 24px}
+  .rc{font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-bottom:12px}
+  .tw{overflow-x:auto;border-radius:6px;border:1px solid var(--border)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead tr{background:var(--surface2);border-bottom:2px solid var(--border2)}
+  th{padding:10px 14px;text-align:left;font-family:var(--mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.07em;font-weight:600;white-space:nowrap;cursor:pointer;user-select:none}
+  th:hover{color:var(--amber)}
+  tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+  tbody tr:hover{background:var(--surface2)}
+  td{padding:10px 14px;vertical-align:top}
+  .tn{font-family:var(--mono);font-size:11px;white-space:nowrap}
+  .tn a{color:var(--amber);text-decoration:none}
+  .tn a:hover{text-decoration:underline}
+  .ts{font-family:var(--mono);font-size:9px;color:var(--text-dim);margin-top:3px}
+  .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+  .b-sentenca{background:#fee2e2;color:#dc2626}
+  .b-decisao{background:#fef2f2;color:#ef4444}
+  .b-despacho{background:#fff7ed;color:#f97316}
+  .b-prazo{background:#fffbeb;color:#f59e0b}
+  .b-audiencia{background:#f5f3ff;color:#8b5cf6}
+  .b-contestacao{background:#ecfeff;color:#06b6d4}
+  .b-publicacao{background:#ecfdf5;color:#10b981}
+  .b-andamento{background:#eff6ff;color:#3b82f6}
+  .ap{display:inline-block;padding:2px 10px;border-radius:12px;font-family:var(--mono);font-size:10px;font-weight:700;white-space:nowrap}
+  .aT{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.3)}
+  .aA{background:rgba(139,92,246,.12);color:#8b5cf6;border:1px solid rgba(139,92,246,.3)}
+  .aM{background:rgba(16,185,129,.12);color:#10b981;border:1px solid rgba(16,185,129,.3)}
+  .state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:12px}
+  .si{font-size:40px;opacity:.3}
+  .st{font-family:var(--mono);font-size:13px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em}
+  .ss{font-size:12px;color:var(--text-muted);text-align:center;max-width:400px;line-height:1.6}
+  .spinner{width:14px;height:14px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+  .ft{font-family:var(--mono);font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em}
+  .fl2{font-family:var(--mono);font-size:10px;color:var(--amber);text-decoration:none}
+  .fl2:hover{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -126,291 +99,174 @@
     <div class="brand-dot"></div>
     <div>
       <div class="brand-title">Monitor Processual</div>
-      <div class="brand-sub">OAB/MG 228789 · JusBrasil · Thales Oliveira Rosa</div>
+      <div class="brand-sub">Cardoso Rosa & Capuzzo</div>
     </div>
+  </div>
+  <div class="adv-badges">
+    <span class="adv-badge adv-t active" onclick="filtrarAdv('todos')">Todos</span>
+    <span class="adv-badge adv-t" onclick="filtrarAdv('Thales')">Thales</span>
+    <span class="adv-badge adv-a" onclick="filtrarAdv('Adriana')">Adriana</span>
+    <span class="adv-badge adv-m" onclick="filtrarAdv('Amauri')">Amauri</span>
   </div>
   <button class="btn-refresh" id="btnRefresh" onclick="carregarDados()">
     <span id="btnText">Atualizar</span>
   </button>
 </header>
 
-<div class="stats" id="statsBar">
-  <div class="stat s-todos active" onclick="filtrarTipo('todos')">
-    <div class="stat-val" id="st-todos">—</div>
-    <div class="stat-label">Total</div>
-  </div>
-  <div class="stat s-sentenca" onclick="filtrarTipo('sentenca')">
-    <div class="stat-val" id="st-sentenca">—</div>
-    <div class="stat-label">Sentenca</div>
-  </div>
-  <div class="stat s-decisao" onclick="filtrarTipo('decisao')">
-    <div class="stat-val" id="st-decisao">—</div>
-    <div class="stat-label">Decisao</div>
-  </div>
-  <div class="stat s-despacho" onclick="filtrarTipo('despacho')">
-    <div class="stat-val" id="st-despacho">—</div>
-    <div class="stat-label">Despacho</div>
-  </div>
-  <div class="stat s-prazo" onclick="filtrarTipo('prazo')">
-    <div class="stat-val" id="st-prazo">—</div>
-    <div class="stat-label">Prazo</div>
-  </div>
-  <div class="stat s-audiencia" onclick="filtrarTipo('audiencia')">
-    <div class="stat-val" id="st-audiencia">—</div>
-    <div class="stat-label">Audiencia</div>
-  </div>
-  <div class="stat s-contestacao" onclick="filtrarTipo('contestacao')">
-    <div class="stat-val" id="st-contestacao">—</div>
-    <div class="stat-label">Contestacao</div>
-  </div>
-  <div class="stat s-publicacao" onclick="filtrarTipo('publicacao')">
-    <div class="stat-val" id="st-publicacao">—</div>
-    <div class="stat-label">Publicacao</div>
-  </div>
-  <div class="stat s-andamento" onclick="filtrarTipo('andamento')">
-    <div class="stat-val" id="st-andamento">—</div>
-    <div class="stat-label">Andamento</div>
-  </div>
+<div class="stats">
+  <div class="stat s-todos active" onclick="filtrarTipo('todos')"><div class="stat-val" id="st-todos">—</div><div class="stat-label">Total</div></div>
+  <div class="stat s-sentenca" onclick="filtrarTipo('sentenca')"><div class="stat-val" id="st-sentenca">—</div><div class="stat-label">Sentenca</div></div>
+  <div class="stat s-decisao" onclick="filtrarTipo('decisao')"><div class="stat-val" id="st-decisao">—</div><div class="stat-label">Decisao</div></div>
+  <div class="stat s-despacho" onclick="filtrarTipo('despacho')"><div class="stat-val" id="st-despacho">—</div><div class="stat-label">Despacho</div></div>
+  <div class="stat s-prazo" onclick="filtrarTipo('prazo')"><div class="stat-val" id="st-prazo">—</div><div class="stat-label">Prazo</div></div>
+  <div class="stat s-audiencia" onclick="filtrarTipo('audiencia')"><div class="stat-val" id="st-audiencia">—</div><div class="stat-label">Audiencia</div></div>
+  <div class="stat s-contestacao" onclick="filtrarTipo('contestacao')"><div class="stat-val" id="st-contestacao">—</div><div class="stat-label">Contestacao</div></div>
+  <div class="stat s-publicacao" onclick="filtrarTipo('publicacao')"><div class="stat-val" id="st-publicacao">—</div><div class="stat-label">Publicacao</div></div>
+  <div class="stat s-andamento" onclick="filtrarTipo('andamento')"><div class="stat-val" id="st-andamento">—</div><div class="stat-label">Andamento</div></div>
 </div>
 
 <div class="filters">
-  <div class="filter-group">
-    <span class="filter-label">Buscar:</span>
-    <input type="text" id="fBusca" placeholder="Numero, parte ou resumo..." oninput="renderTabela()" style="width:220px">
-  </div>
-  <div class="filter-group">
-    <span class="filter-label">Tribunal:</span>
+  <div class="fl"><span class="fl-label">Buscar:</span><input type="text" id="fBusca" placeholder="Numero, parte ou resumo..." oninput="renderTabela()" style="width:200px"></div>
+  <div class="fl"><span class="fl-label">Tribunal:</span>
     <select id="fTribunal" onchange="renderTabela()">
       <option value="">Todos</option>
-      <option>TJMG</option>
-      <option>TJSP</option>
-      <option>TRT-3/MG</option>
-      <option>TRF-1</option>
-      <option>STJ</option>
+      <option>TJMG</option><option>TJSP</option><option>TRT-3/MG</option><option>TRF-1</option><option>STJ</option>
     </select>
   </div>
-  <div class="filter-group">
-    <span class="filter-label">De:</span>
-    <input type="date" id="fDataDe" onchange="renderTabela()">
-  </div>
-  <div class="filter-group">
-    <span class="filter-label">Ate:</span>
-    <input type="date" id="fDataAte" onchange="renderTabela()">
-  </div>
-  <button class="btn-clear" onclick="limparFiltros()">Limpar Filtros</button>
+  <div class="fl"><span class="fl-label">De:</span><input type="date" id="fDataDe" onchange="renderTabela()"></div>
+  <div class="fl"><span class="fl-label">Ate:</span><input type="date" id="fDataAte" onchange="renderTabela()"></div>
+  <button class="btn-c" onclick="limparFiltros()">Limpar</button>
 </div>
 
 <div class="main">
-  <div class="result-count" id="resultCount"></div>
-  <div class="table-wrap" id="tableWrap">
-    <div class="state">
-      <div class="state-icon">⚖</div>
-      <div class="state-title">Monitor Processual</div>
-      <div class="state-sub">Clique em <strong style="color:var(--amber)">Atualizar</strong> para carregar os dados da planilha.</div>
-    </div>
+  <div class="rc" id="rc"></div>
+  <div class="tw" id="tw">
+    <div class="state"><div class="si">⚖</div><div class="st">Carregando...</div></div>
   </div>
 </div>
 
 <footer class="footer">
-  <div class="footer-text">Thales Oliveira Rosa · OAB/MG 228789</div>
+  <div class="ft">Cardoso Rosa & Capuzzo · Thales · Adriana · Amauri</div>
   <div style="display:flex;gap:16px">
-    <a class="footer-link" href="https://escritorioonline.jusbrasil.com.br/publicacoes-e-andamentos" target="_blank">JusBrasil →</a>
-    <a class="footer-link" id="linkSheets" href="#" target="_blank">Planilha →</a>
+    <a class="fl2" href="https://escritorioonline.jusbrasil.com.br/publicacoes-e-andamentos" target="_blank">JusBrasil</a>
+    <a class="fl2" id="ls" href="#" target="_blank">Planilha</a>
   </div>
 </footer>
 
 <script>
-// ── CONFIGURACAO ─────────────────────────────────────────────
-const SHEET_ID  = '1DI-P7_8HywISFjYDNZJQtx1gOrJBIzh6FeDJi3KddUI';
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+const SID = '1DI-P7_8HywISFjYDNZJQtx1gOrJBIzh6FeDJi3KddUI';
+document.getElementById('ls').href = 'https://docs.google.com/spreadsheets/d/' + SID;
 
-document.getElementById('linkSheets').href = `https://docs.google.com/spreadsheets/d/${SHEET_ID}`;
+let dados = [], fTipo = 'todos', fAdv = 'todos';
 
-let todosOsDados = [];
-let filtroTipo   = 'todos';
-
-// ── CARREGA DADOS DO SHEETS ───────────────────────────────────
 async function carregarDados() {
-  const btn  = document.getElementById('btnRefresh');
-  const text = document.getElementById('btnText');
+  const btn = document.getElementById('btnRefresh');
   btn.disabled = true;
-  text.innerHTML = '<span class="spinner"></span>';
-
+  document.getElementById('btnText').innerHTML = '<span class="spinner"></span>';
   try {
-    const resp = await fetch(SHEET_URL + '&t=' + Date.now());
-    const raw  = await resp.text();
-
-    // Google retorna JSONP — remove wrapper
-    const json = JSON.parse(raw.replace(/^[^(]+\(/, '').replace(/\);?\s*$/, ''));
-    const rows = json.table.rows || [];
-    const cols = json.table.cols || [];
-
-    // Mapeia colunas pelo índice
-    // Ordem: Data, Numero, Autor, Reu, TipoAcao, TipoMov, Resumo, Tribunal, Fonte
-    todosOsDados = rows.map(row => {
+    const r = await fetch('https://docs.google.com/spreadsheets/d/' + SID + '/gviz/tq?tqx=out:json&t=' + Date.now());
+    const raw = await r.text();
+    const j = JSON.parse(raw.replace(/^[^(]+\(/, '').replace(/\);?\s*$/, ''));
+    dados = (j.table.rows || []).map(row => {
       const c = row.c || [];
       return {
-        data:      c[0] ? (c[0].f || c[0].v || '') : '',
-        numero:    c[1] ? (c[1].v || '') : '',
-        autor:     c[2] ? (c[2].v || '') : '',
-        reu:       c[3] ? (c[3].v || '') : '',
-        tipoAcao:  c[4] ? (c[4].v || '') : '',
-        tipo:      c[5] ? (c[5].v || '') : '',
-        resumo:    c[6] ? (c[6].v || '') : '',
-        tribunal:  c[7] ? (c[7].v || '') : '',
-        fonte:     c[8] ? (c[8].v || '') : ''
+        data: c[0]?(c[0].f||c[0].v||''):'',
+        advogado: c[1]?(c[1].v||'Thales'):'Thales',
+        numero: c[2]?(c[2].v||''):'',
+        autor: c[3]?(c[3].v||''):'',
+        reu: c[4]?(c[4].v||''):'',
+        tipoAcao: c[5]?(c[5].v||''):'',
+        tipo: c[6]?(c[6].v||''):'',
+        resumo: c[7]?(c[7].v||''):'',
+        tribunal: c[8]?(c[8].v||''):'',
+        fonte: c[9]?(c[9].v||''):''
       };
-    }).filter(r => r.numero && r.numero !== 'Numero'); // remove header se veio
-
-    atualizarStats();
-    renderTabela();
-
-  } catch (e) {
-    document.getElementById('tableWrap').innerHTML = `
-      <div class="state">
-        <div class="state-icon">⚠</div>
-        <div class="state-title">Erro ao carregar</div>
-        <div class="state-sub">Verifique se a planilha esta publica: <br>
-        Planilha → Compartilhar → Qualquer pessoa com o link pode ver</div>
-      </div>`;
+    }).filter(r => r.numero && r.numero !== 'Numero');
+    atualizarStats(); renderTabela();
+  } catch(e) {
+    document.getElementById('tw').innerHTML = '<div class="state"><div class="si">⚠</div><div class="st">Erro ao carregar</div><div class="ss">Verifique se a planilha esta publica: Planilha → Compartilhar → Qualquer pessoa com o link pode ver</div></div>';
   }
-
   btn.disabled = false;
-  text.textContent = 'Atualizar';
+  document.getElementById('btnText').textContent = 'Atualizar';
 }
 
-// ── FILTROS ───────────────────────────────────────────────────
-function filtrarTipo(tipo) {
-  filtroTipo = tipo;
+function filtrarTipo(t) {
+  fTipo = t;
   document.querySelectorAll('.stat').forEach(s => s.classList.remove('active'));
-  document.querySelector('.s-' + tipo)?.classList.add('active');
+  document.querySelector('.s-' + t)?.classList.add('active');
   renderTabela();
+}
+
+function filtrarAdv(a) {
+  fAdv = a;
+  document.querySelectorAll('.adv-badge').forEach(b => b.classList.remove('active'));
+  const idx = {todos:0,Thales:1,Adriana:2,Amauri:3};
+  document.querySelectorAll('.adv-badge')[idx[a]||0]?.classList.add('active');
+  atualizarStats(); renderTabela();
 }
 
 function limparFiltros() {
-  document.getElementById('fBusca').value    = '';
-  document.getElementById('fTribunal').value = '';
-  document.getElementById('fDataDe').value   = '';
-  document.getElementById('fDataAte').value  = '';
-  filtroTipo = 'todos';
+  ['fBusca','fTribunal','fDataDe','fDataAte'].forEach(id => document.getElementById(id).value = '');
+  fTipo = 'todos'; fAdv = 'todos';
   document.querySelectorAll('.stat').forEach(s => s.classList.remove('active'));
-  document.querySelector('.s-todos').classList.add('active');
-  renderTabela();
+  document.querySelector('.s-todos')?.classList.add('active');
+  document.querySelectorAll('.adv-badge').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.adv-badge')[0]?.classList.add('active');
+  atualizarStats(); renderTabela();
 }
 
-function getDadosFiltrados() {
-  const busca    = document.getElementById('fBusca').value.toLowerCase();
-  const tribunal = document.getElementById('fTribunal').value;
-  const dataDe   = document.getElementById('fDataDe').value;
-  const dataAte  = document.getElementById('fDataAte').value;
-
-  return todosOsDados.filter(p => {
-    if (filtroTipo !== 'todos' && p.tipo !== filtroTipo) return false;
-    if (tribunal && p.tribunal !== tribunal) return false;
-    if (busca) {
-      const txt = (p.numero + p.autor + p.reu + p.resumo + p.tipoAcao).toLowerCase();
-      if (!txt.includes(busca)) return false;
-    }
-    if (dataDe || dataAte) {
-      const partes = (p.data || '').split('/');
-      if (partes.length === 3) {
-        const dataP = partes[2].substring(0,4) + '-' + partes[1] + '-' + partes[0];
-        if (dataDe && dataP < dataDe) return false;
-        if (dataAte && dataP > dataAte) return false;
+function getFiltrados() {
+  const busca = document.getElementById('fBusca').value.toLowerCase();
+  const trib  = document.getElementById('fTribunal').value;
+  const dDe   = document.getElementById('fDataDe').value;
+  const dAte  = document.getElementById('fDataAte').value;
+  return dados.filter(p => {
+    if (fTipo !== 'todos' && p.tipo !== fTipo) return false;
+    if (fAdv  !== 'todos' && p.advogado !== fAdv) return false;
+    if (trib && p.tribunal !== trib) return false;
+    if (busca && !(p.numero+p.autor+p.reu+p.resumo+p.tipoAcao+p.advogado).toLowerCase().includes(busca)) return false;
+    if (dDe || dAte) {
+      const pt = (p.data||'').split('/');
+      if (pt.length >= 3) {
+        const dp = pt[2].substring(0,4)+'-'+pt[1]+'-'+pt[0];
+        if (dDe && dp < dDe) return false;
+        if (dAte && dp > dAte) return false;
       }
     }
     return true;
   });
 }
 
-// ── ATUALIZA STATS ────────────────────────────────────────────
 function atualizarStats() {
-  const tipos = ['todos','sentenca','decisao','despacho','prazo','audiencia','contestacao','publicacao','andamento'];
-  tipos.forEach(tipo => {
-    const n = tipo === 'todos'
-      ? todosOsDados.length
-      : todosOsDados.filter(p => p.tipo === tipo).length;
-    const el = document.getElementById('st-' + tipo);
-    if (el) el.textContent = n;
+  const base = fAdv === 'todos' ? dados : dados.filter(p => p.advogado === fAdv);
+  ['todos','sentenca','decisao','despacho','prazo','audiencia','contestacao','publicacao','andamento'].forEach(t => {
+    const el = document.getElementById('st-'+t);
+    if (el) el.textContent = t === 'todos' ? base.length : base.filter(p => p.tipo === t).length;
   });
 }
 
-// ── RENDERIZA TABELA ──────────────────────────────────────────
 function renderTabela() {
-  const dados = getDadosFiltrados();
-  const wrap  = document.getElementById('tableWrap');
-  const count = document.getElementById('resultCount');
-
-  count.textContent = dados.length + ' resultado(s)';
-
-  if (!dados.length) {
-    wrap.innerHTML = `<div class="state">
-      <div class="state-icon">✓</div>
-      <div class="state-title">Nenhum resultado</div>
-      <div class="state-sub">Tente outros filtros.</div>
-    </div>`;
+  const f = getFiltrados();
+  document.getElementById('rc').textContent = f.length + ' resultado(s)';
+  if (!f.length) {
+    document.getElementById('tw').innerHTML = '<div class="state"><div class="si">✓</div><div class="st">Nenhum resultado</div><div class="ss">Tente outros filtros.</div></div>';
     return;
   }
-
-  const labels = {
-    sentenca:'Sentenca', decisao:'Decisao', despacho:'Despacho',
-    prazo:'Prazo', audiencia:'Audiencia', contestacao:'Contestacao',
-    publicacao:'Publicacao', andamento:'Andamento'
-  };
-
-  let html = `<table>
-    <thead><tr>
-      <th onclick="ordenar('numero')">Processo</th>
-      <th onclick="ordenar('autor')">Autor</th>
-      <th onclick="ordenar('reu')">Reu</th>
-      <th onclick="ordenar('tipoAcao')">Tipo de Acao</th>
-      <th onclick="ordenar('tipo')">Classificacao</th>
-      <th onclick="ordenar('resumo')">Resumo</th>
-      <th onclick="ordenar('data')">Data</th>
-    </tr></thead><tbody>`;
-
-  dados.forEach(p => {
-    const link = `https://www.jusbrasil.com.br/processos/search?q=${encodeURIComponent(p.numero)}`;
-    const tipo = p.tipo || 'andamento';
-    const label = labels[tipo] || tipo;
-
-    html += `<tr>
-      <td class="td-numero">
-        <a href="${link}" target="_blank">${p.numero}</a>
-        <div class="td-tribunal">${p.tribunal} · ${p.fonte}</div>
-      </td>
-      <td>
-        <div class="td-parte-label">Autor</div>
-        <div class="td-parte">${p.autor || '—'}</div>
-      </td>
-      <td>
-        <div class="td-parte-label">Reu</div>
-        <div class="td-parte">${p.reu || '—'}</div>
-      </td>
-      <td><span class="badge b-${tipo}">${p.tipoAcao || label}</span></td>
-      <td><span class="badge b-${tipo}">${label}</span></td>
-      <td class="td-resumo">${(p.resumo || '').substring(0,120)}</td>
-      <td class="td-data">${p.data}</td>
-    </tr>`;
+  const lb = {sentenca:'Sentenca',decisao:'Decisao',despacho:'Despacho',prazo:'Prazo',audiencia:'Audiencia',contestacao:'Contestacao',publicacao:'Publicacao',andamento:'Andamento'};
+  const ac = {Thales:'aT',Adriana:'aA',Amauri:'aM'};
+  let h = '<table><thead><tr><th onclick="ord(\'numero\')">Processo</th><th onclick="ord(\'advogado\')">Advogado</th><th onclick="ord(\'autor\')">Autor</th><th onclick="ord(\'reu\')">Reu</th><th onclick="ord(\'tipoAcao\')">Tipo Acao</th><th onclick="ord(\'tipo\')">Classificacao</th><th>Resumo</th><th onclick="ord(\'data\')">Data</th></tr></thead><tbody>';
+  f.forEach(p => {
+    const t = p.tipo||'andamento', l = lb[t]||t, a = p.advogado||'Thales', ac2 = ac[a]||'aT';
+    const lk = 'https://www.jusbrasil.com.br/processos/search?q='+encodeURIComponent(p.numero);
+    h += `<tr><td class="tn"><a href="${lk}" target="_blank">${p.numero}</a><div class="ts">${p.tribunal} · ${p.fonte}</div></td><td><span class="ap ${ac2}">${a}</span></td><td style="font-size:12px;color:var(--text)">${p.autor||'—'}</td><td style="font-size:12px;color:var(--text)">${p.reu||'—'}</td><td><span class="badge b-${t}">${p.tipoAcao||l}</span></td><td><span class="badge b-${t}">${l}</span></td><td style="font-size:12px;color:var(--text-dim);max-width:260px">${(p.resumo||'').substring(0,100)}</td><td style="font-family:var(--mono);font-size:10px;color:var(--text-dim);white-space:nowrap">${p.data}</td></tr>`;
   });
-
-  html += '</tbody></table>';
-  wrap.innerHTML = html;
+  h += '</tbody></table>';
+  document.getElementById('tw').innerHTML = h;
 }
 
-// ── ORDENACAO ─────────────────────────────────────────────────
-let sortCol = ''; let sortAsc = true;
-function ordenar(col) {
-  if (sortCol === col) sortAsc = !sortAsc; else { sortCol = col; sortAsc = true; }
-  todosOsDados.sort((a, b) => {
-    const va = (a[col] || '').toString().toLowerCase();
-    const vb = (b[col] || '').toString().toLowerCase();
-    return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
-  });
-  renderTabela();
-}
+let sc='',sa=true;
+function ord(c){if(sc===c)sa=!sa;else{sc=c;sa=true;}dados.sort((a,b)=>{const va=(a[c]||'').toString().toLowerCase(),vb=(b[c]||'').toString().toLowerCase();return sa?va.localeCompare(vb):vb.localeCompare(va);});renderTabela();}
 
-// Carrega automaticamente
 window.addEventListener('load', carregarDados);
 </script>
 </body>
