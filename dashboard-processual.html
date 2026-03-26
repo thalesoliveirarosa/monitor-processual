@@ -728,7 +728,7 @@ function renderTabela() {
     const l  = lb[t] || t;
     const a  = p.advogado || 'Thales';
     const ac2 = ac[a] || 'aT';
-    const lk = 'https://www.jusbrasil.com.br/consulta-processual/?numero=' + encodeURIComponent(p.numero);
+    const lk = 'https://www.jusbrasil.com.br/busca?q=' + encodeURIComponent(p.numero);
 
     h += `<tr>
       <td class="td-num">
