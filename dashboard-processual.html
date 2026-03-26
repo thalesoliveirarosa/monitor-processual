@@ -4,195 +4,646 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Monitor Processual · Cardoso Rosa & Capuzzo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
-  :root {
-    --bg:#0a0a0f; --surface:#111118; --surface2:#16161f;
-    --border:#1e1e2e; --border2:#2a2a3e;
-    --amber:#f59e0b; --green:#10b981; --red:#ef4444;
-    --blue:#3b82f6; --purple:#8b5cf6; --cyan:#06b6d4; --orange:#f97316;
-    --text:#e2e8f0; --text-dim:#64748b; --text-muted:#334155;
-    --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans',sans-serif;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh}
-  .header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
-  .brand{display:flex;align-items:center;gap:12px}
-  .brand-dot{width:8px;height:8px;background:var(--amber);border-radius:50%;animation:pulse 2s infinite}
-  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.4)}50%{box-shadow:0 0 0 6px rgba(245,158,11,0)}}
-  .brand-title{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--amber);text-transform:uppercase;letter-spacing:.05em}
-  .brand-sub{font-family:var(--mono);font-size:10px;color:var(--text-dim)}
-  .adv-badges{display:flex;gap:8px}
-  .adv-badge{font-family:var(--mono);font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid transparent;opacity:.6}
-  .adv-badge.active,.adv-badge:hover{opacity:1;transform:translateY(-1px)}
-  .adv-t{background:rgba(245,158,11,.1);color:var(--amber);border-color:rgba(245,158,11,.3)}
-  .adv-a{background:rgba(139,92,246,.1);color:var(--purple);border-color:rgba(139,92,246,.3)}
-  .adv-m{background:rgba(16,185,129,.1);color:var(--green);border-color:rgba(16,185,129,.3)}
-  .btn-refresh{font-family:var(--mono);font-size:11px;font-weight:600;padding:8px 16px;background:var(--amber);color:#000;border:none;border-radius:4px;cursor:pointer;text-transform:uppercase;letter-spacing:.05em;transition:all .15s}
-  .btn-refresh:hover{background:#fbbf24}
-  .btn-refresh:disabled{opacity:.5;cursor:not-allowed}
-  .stats{display:flex;gap:10px;padding:16px 24px;flex-wrap:wrap;background:var(--surface);border-bottom:1px solid var(--border)}
-  .stat{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px 16px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;min-width:90px}
-  .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-  .stat:hover,.stat.active{border-color:var(--border2);transform:translateY(-1px)}
-  .stat-val{font-family:var(--mono);font-size:24px;font-weight:700;line-height:1}
-  .stat-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-top:4px}
-  .s-todos::before{background:var(--amber)}.s-todos .stat-val{color:var(--amber)}
-  .s-sentenca::before{background:#dc2626}.s-sentenca .stat-val{color:#dc2626}
-  .s-decisao::before{background:var(--red)}.s-decisao .stat-val{color:var(--red)}
-  .s-despacho::before{background:var(--orange)}.s-despacho .stat-val{color:var(--orange)}
-  .s-prazo::before{background:var(--amber)}.s-prazo .stat-val{color:var(--amber)}
-  .s-audiencia::before{background:var(--purple)}.s-audiencia .stat-val{color:var(--purple)}
-  .s-contestacao::before{background:var(--cyan)}.s-contestacao .stat-val{color:var(--cyan)}
-  .s-publicacao::before{background:var(--green)}.s-publicacao .stat-val{color:var(--green)}
-  .s-andamento::before{background:var(--blue)}.s-andamento .stat-val{color:var(--blue)}
-  .filters{padding:14px 24px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--border)}
-  .fl{display:flex;align-items:center;gap:8px}
-  .fl-label{font-family:var(--mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
-  select,input[type=text],input[type=date]{background:var(--surface2);border:1px solid var(--border2);border-radius:4px;padding:7px 10px;font-family:var(--mono);font-size:11px;color:var(--text);outline:none;transition:border-color .15s}
-  select:focus,input:focus{border-color:var(--amber)}
-  .btn-c{font-family:var(--mono);font-size:10px;padding:7px 12px;background:transparent;border:1px solid var(--border2);border-radius:4px;color:var(--text-dim);cursor:pointer;transition:all .15s;text-transform:uppercase}
-  .btn-c:hover{border-color:var(--amber);color:var(--amber)}
-  .main{padding:20px 24px}
-  .rc{font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-bottom:12px}
-  .tw{overflow-x:auto;border-radius:6px;border:1px solid var(--border)}
-  table{width:100%;border-collapse:collapse;font-size:13px}
-  thead tr{background:var(--surface2);border-bottom:2px solid var(--border2)}
-  th{padding:10px 14px;text-align:left;font-family:var(--mono);font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.07em;font-weight:600;white-space:nowrap;cursor:pointer;user-select:none}
-  th:hover{color:var(--amber)}
-  tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
-  tbody tr:hover{background:var(--surface2)}
-  td{padding:10px 14px;vertical-align:top}
-  .tn{font-family:var(--mono);font-size:11px;white-space:nowrap}
-  .tn a{color:var(--amber);text-decoration:none}
-  .tn a:hover{text-decoration:underline}
-  .ts{font-family:var(--mono);font-size:9px;color:var(--text-dim);margin-top:3px}
-  .badge{display:inline-block;padding:2px 8px;border-radius:12px;font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
-  .b-sentenca{background:#fee2e2;color:#dc2626}
-  .b-decisao{background:#fef2f2;color:#ef4444}
-  .b-despacho{background:#fff7ed;color:#f97316}
-  .b-prazo{background:#fffbeb;color:#f59e0b}
-  .b-audiencia{background:#f5f3ff;color:#8b5cf6}
-  .b-contestacao{background:#ecfeff;color:#06b6d4}
-  .b-publicacao{background:#ecfdf5;color:#10b981}
-  .b-andamento{background:#eff6ff;color:#3b82f6}
-  .ap{display:inline-block;padding:2px 10px;border-radius:12px;font-family:var(--mono);font-size:10px;font-weight:700;white-space:nowrap}
-  .aT{background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.3)}
-  .aA{background:rgba(139,92,246,.12);color:#8b5cf6;border:1px solid rgba(139,92,246,.3)}
-  .aM{background:rgba(16,185,129,.12);color:#10b981;border:1px solid rgba(16,185,129,.3)}
-  .state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:12px}
-  .si{font-size:40px;opacity:.3}
-  .st{font-family:var(--mono);font-size:13px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em}
-  .ss{font-size:12px;color:var(--text-muted);text-align:center;max-width:400px;line-height:1.6}
-  .spinner{width:14px;height:14px;border:2px solid rgba(0,0,0,.2);border-top-color:#000;border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-  .ft{font-family:var(--mono);font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em}
-  .fl2{font-family:var(--mono);font-size:10px;color:var(--amber);text-decoration:none}
-  .fl2:hover{text-decoration:underline}
+:root {
+  --bg:       #0f1623;
+  --surface:  #161f30;
+  --surface2: #1c2840;
+  --surface3: #243250;
+  --border:   #1e2d45;
+  --border2:  #2a3f5f;
+  --amber:    #f5a623;
+  --amber2:   #ffc048;
+  --green:    #00c48c;
+  --red:      #ff4d6a;
+  --blue:     #4d9fff;
+  --purple:   #a78bfa;
+  --cyan:     #22d3ee;
+  --orange:   #fb923c;
+  --text:     #e8edf5;
+  --text-dim: #7a8fa6;
+  --text-muted: #3d5166;
+  --radius:   12px;
+  --radius-sm: 8px;
+  --font:     'Inter', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; font-size: 14px; }
+
+/* ── HEADER ── */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon {
+  width: 46px; height: 36px;
+  background: linear-gradient(135deg, var(--amber), var(--amber2));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 11px; color: #000; letter-spacing: .03em;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -.01em;
+}
+
+.brand-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 1px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.header-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.adv-badge {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all .15s;
+  border: 1px solid transparent;
+  opacity: .6;
+}
+.adv-badge.active, .adv-badge:hover { opacity: 1; }
+.adv-t  { background: rgba(245,166,35,.1);  color: var(--amber);  border-color: rgba(245,166,35,.3); }
+.adv-a  { background: rgba(167,139,250,.1); color: var(--purple); border-color: rgba(167,139,250,.3); }
+.adv-m  { background: rgba(0,196,140,.1);   color: var(--green);  border-color: rgba(0,196,140,.3); }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.updated-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+  background: var(--surface2);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.updated-dot {
+  width: 7px; height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.btn-sync {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500;
+  padding: 7px 14px;
+  background: var(--surface2);
+  color: var(--text-dim);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-sync:hover { background: var(--surface3); color: var(--text); border-color: var(--amber); }
+.btn-sync:disabled { opacity: .5; cursor: not-allowed; }
+.btn-sync svg { width: 14px; height: 14px; }
+
+.btn-primary {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600;
+  padding: 8px 18px;
+  background: var(--amber);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .15s;
+  letter-spacing: .01em;
+}
+.btn-primary:hover { background: var(--amber2); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── STATS ── */
+.stats-section {
+  padding: 24px 28px 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 0 0 var(--radius) var(--radius);
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.stat-card:hover, .stat-card.active {
+  border-color: var(--border2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.2);
+}
+
+.stat-card.active::after { opacity: 1; }
+.stat-card:hover::after { opacity: .5; }
+
+.stat-val {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 6px;
+  letter-spacing: -.02em;
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-dim);
+}
+
+.stat-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.s-todos .stat-val { color: var(--amber); }
+.s-todos::after   { background: var(--amber); }
+.s-sentenca .stat-val { color: var(--red); }
+.s-sentenca::after { background: var(--red); }
+.s-decisao .stat-val { color: #ff7a92; }
+.s-decisao::after { background: #ff7a92; }
+.s-despacho .stat-val { color: var(--orange); }
+.s-despacho::after { background: var(--orange); }
+.s-prazo .stat-val { color: var(--amber); }
+.s-prazo::after { background: var(--amber); }
+.s-audiencia .stat-val { color: var(--purple); }
+.s-audiencia::after { background: var(--purple); }
+.s-contestacao .stat-val { color: var(--cyan); }
+.s-contestacao::after { background: var(--cyan); }
+.s-publicacao .stat-val { color: var(--green); }
+.s-publicacao::after { background: var(--green); }
+.s-andamento .stat-val { color: var(--blue); }
+.s-andamento::after { background: var(--blue); }
+
+/* ── FILTERS ── */
+.filters-section {
+  padding: 20px 28px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  pointer-events: none;
+  width: 15px; height: 15px;
+}
+
+input[type=text] {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px 9px 36px;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+}
+
+input[type=date], select {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  transition: border-color .15s;
+}
+
+input:focus, select:focus { border-color: var(--amber); }
+input::placeholder { color: var(--text-muted); }
+
+select option { background: var(--surface2); }
+
+.btn-clear {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn-clear:hover { border-color: var(--amber); color: var(--amber); }
+
+/* ── TABLE ── */
+.table-section {
+  padding: 0 28px 28px;
+}
+
+.result-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+table { width: 100%; border-collapse: collapse; }
+
+thead tr {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border2);
+}
+
+th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color .15s;
+}
+th:hover { color: var(--amber); }
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background .1s;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--surface2); }
+
+td { padding: 12px 16px; vertical-align: middle; }
+
+.td-num { font-size: 12px; font-weight: 500; }
+.td-num a { color: var(--amber); text-decoration: none; transition: color .15s; }
+.td-num a:hover { color: var(--amber2); text-decoration: underline; }
+.td-tribunal { font-size: 10px; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
+
+.adv-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.aT { background: rgba(245,166,35,.12);  color: var(--amber);  border: 1px solid rgba(245,166,35,.25); }
+.aA { background: rgba(167,139,250,.12); color: var(--purple); border: 1px solid rgba(167,139,250,.25); }
+.aM { background: rgba(0,196,140,.12);   color: var(--green);  border: 1px solid rgba(0,196,140,.25); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.b-sentenca    { background: rgba(255,77,106,.12);  color: var(--red);    border: 1px solid rgba(255,77,106,.25); }
+.b-decisao     { background: rgba(255,122,146,.12); color: #ff7a92;       border: 1px solid rgba(255,122,146,.25); }
+.b-despacho    { background: rgba(251,146,60,.12);  color: var(--orange); border: 1px solid rgba(251,146,60,.25); }
+.b-prazo       { background: rgba(245,166,35,.12);  color: var(--amber);  border: 1px solid rgba(245,166,35,.25); }
+.b-audiencia   { background: rgba(167,139,250,.12); color: var(--purple); border: 1px solid rgba(167,139,250,.25); }
+.b-contestacao { background: rgba(34,211,238,.12);  color: var(--cyan);   border: 1px solid rgba(34,211,238,.25); }
+.b-publicacao  { background: rgba(0,196,140,.12);   color: var(--green);  border: 1px solid rgba(0,196,140,.25); }
+.b-andamento   { background: rgba(77,159,255,.12);  color: var(--blue);   border: 1px solid rgba(77,159,255,.25); }
+
+.td-resumo {
+  font-size: 12px;
+  color: var(--text-dim);
+  max-width: 280px;
+  line-height: 1.4;
+}
+
+.td-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+/* ── SPINNER ── */
+.spin { animation: rotate .7s linear infinite; }
+@keyframes rotate { to { transform: rotate(360deg); } }
+
+/* ── STATE SCREEN ── */
+.state {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 80px 24px; gap: 12px; text-align: center;
+}
+.state-icon { font-size: 40px; opacity: .25; }
+.state-title { font-size: 14px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: .06em; }
+.state-sub { font-size: 13px; color: var(--text-muted); max-width: 380px; line-height: 1.6; }
+
+/* ── FOOTER ── */
+.footer {
+  padding: 16px 28px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.footer-text { font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
+.footer-links { display: flex; gap: 16px; }
+.footer-link { font-size: 11px; font-weight: 600; color: var(--amber); text-decoration: none; text-transform: uppercase; letter-spacing: .04em; transition: color .15s; }
+.footer-link:hover { color: var(--amber2); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .header { padding: 0 16px; height: auto; flex-wrap: wrap; padding: 12px 16px; gap: 10px; }
+  .header-center { display: none; }
+  .stats-section { padding: 16px; grid-template-columns: repeat(3, 1fr); }
+  .filters-section { padding: 12px 16px; }
+  .table-section { padding: 0 16px 16px; }
+  .footer { padding: 12px 16px; }
+  .updated-tag span { display: none; }
+}
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <header class="header">
   <div class="brand">
-    <div class="brand-dot"></div>
+    <div class="brand-icon">CRC</div>
     <div>
-      <div class="brand-title">Monitor Processual</div>
-      <div class="brand-sub">Cardoso Rosa & Capuzzo</div>
+      <div class="brand-name">Cardoso Rosa & Capuzzo</div>
+      <div class="brand-sub">Painel de Movimentações</div>
     </div>
   </div>
-  <div class="adv-badges">
+
+  <div class="header-center">
     <span class="adv-badge adv-t active" onclick="filtrarAdv('todos')">Todos</span>
     <span class="adv-badge adv-t" onclick="filtrarAdv('Thales')">Thales</span>
     <span class="adv-badge adv-a" onclick="filtrarAdv('Adriana')">Adriana</span>
     <span class="adv-badge adv-m" onclick="filtrarAdv('Amauri')">Amauri</span>
   </div>
-  <button class="btn-refresh" id="btnRefresh" onclick="carregarDados()">
-    <span id="btnText">Atualizar</span>
-  </button>
+
+  <div class="header-right">
+    <div class="updated-tag">
+      <div class="updated-dot"></div>
+      <span id="updatedTime">Carregando...</span>
+    </div>
+    <button class="btn-sync" id="btnSync" onclick="carregarDados()">
+      <svg id="syncIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <polyline points="1 20 1 14 7 14"></polyline>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+      </svg>
+      Sincronizar
+    </button>
+    <button class="btn-primary" onclick="window.open('https://escritorioonline.jusbrasil.com.br/publicacoes-e-andamentos','_blank')">
+      + Abrir JusBrasil
+    </button>
+  </div>
 </header>
 
-<div class="stats">
-  <div class="stat s-todos active" onclick="filtrarTipo('todos')"><div class="stat-val" id="st-todos">—</div><div class="stat-label">Total</div></div>
-  <div class="stat s-sentenca" onclick="filtrarTipo('sentenca')"><div class="stat-val" id="st-sentenca">—</div><div class="stat-label">Sentenca</div></div>
-  <div class="stat s-decisao" onclick="filtrarTipo('decisao')"><div class="stat-val" id="st-decisao">—</div><div class="stat-label">Decisao</div></div>
-  <div class="stat s-despacho" onclick="filtrarTipo('despacho')"><div class="stat-val" id="st-despacho">—</div><div class="stat-label">Despacho</div></div>
-  <div class="stat s-prazo" onclick="filtrarTipo('prazo')"><div class="stat-val" id="st-prazo">—</div><div class="stat-label">Prazo</div></div>
-  <div class="stat s-audiencia" onclick="filtrarTipo('audiencia')"><div class="stat-val" id="st-audiencia">—</div><div class="stat-label">Audiencia</div></div>
-  <div class="stat s-contestacao" onclick="filtrarTipo('contestacao')"><div class="stat-val" id="st-contestacao">—</div><div class="stat-label">Contestacao</div></div>
-  <div class="stat s-publicacao" onclick="filtrarTipo('publicacao')"><div class="stat-val" id="st-publicacao">—</div><div class="stat-label">Publicacao</div></div>
-  <div class="stat s-andamento" onclick="filtrarTipo('andamento')"><div class="stat-val" id="st-andamento">—</div><div class="stat-label">Andamento</div></div>
+<!-- STATS -->
+<div class="stats-section">
+  <div class="stat-card s-todos active" onclick="filtrarTipo('todos')">
+    <div class="stat-val" id="st-todos">—</div>
+    <div class="stat-label">Total</div>
+    <div class="stat-sub">movimentações</div>
+  </div>
+  <div class="stat-card s-sentenca" onclick="filtrarTipo('sentenca')">
+    <div class="stat-val" id="st-sentenca">—</div>
+    <div class="stat-label">Sentença</div>
+  </div>
+  <div class="stat-card s-decisao" onclick="filtrarTipo('decisao')">
+    <div class="stat-val" id="st-decisao">—</div>
+    <div class="stat-label">Decisão</div>
+  </div>
+  <div class="stat-card s-despacho" onclick="filtrarTipo('despacho')">
+    <div class="stat-val" id="st-despacho">—</div>
+    <div class="stat-label">Despacho</div>
+  </div>
+  <div class="stat-card s-prazo" onclick="filtrarTipo('prazo')">
+    <div class="stat-val" id="st-prazo">—</div>
+    <div class="stat-label">Prazo</div>
+  </div>
+  <div class="stat-card s-audiencia" onclick="filtrarTipo('audiencia')">
+    <div class="stat-val" id="st-audiencia">—</div>
+    <div class="stat-label">Audiência</div>
+  </div>
+  <div class="stat-card s-contestacao" onclick="filtrarTipo('contestacao')">
+    <div class="stat-val" id="st-contestacao">—</div>
+    <div class="stat-label">Contestação</div>
+  </div>
+  <div class="stat-card s-publicacao" onclick="filtrarTipo('publicacao')">
+    <div class="stat-val" id="st-publicacao">—</div>
+    <div class="stat-label">Publicação</div>
+  </div>
+  <div class="stat-card s-andamento" onclick="filtrarTipo('andamento')">
+    <div class="stat-val" id="st-andamento">—</div>
+    <div class="stat-label">Andamento</div>
+  </div>
 </div>
 
-<div class="filters">
-  <div class="fl"><span class="fl-label">Buscar:</span><input type="text" id="fBusca" placeholder="Numero, parte ou resumo..." oninput="renderTabela()" style="width:200px"></div>
-  <div class="fl"><span class="fl-label">Tribunal:</span>
+<!-- FILTERS -->
+<div class="filters-section">
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <input type="text" id="fBusca" placeholder="Buscar por número, parte ou resumo..." oninput="renderTabela()">
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Tribunal</span>
     <select id="fTribunal" onchange="renderTabela()">
       <option value="">Todos</option>
-      <option>TJMG</option><option>TJSP</option><option>TRT-3/MG</option><option>TRF-1</option><option>STJ</option>
+      <option>TJMG</option><option>TJSP</option>
+      <option>TRT-3/MG</option><option>TRF-1</option><option>STJ</option>
     </select>
   </div>
-  <div class="fl"><span class="fl-label">De:</span><input type="date" id="fDataDe" onchange="renderTabela()"></div>
-  <div class="fl"><span class="fl-label">Ate:</span><input type="date" id="fDataAte" onchange="renderTabela()"></div>
-  <button class="btn-c" onclick="limparFiltros()">Limpar</button>
+  <div class="filter-group">
+    <span class="filter-label">De</span>
+    <input type="date" id="fDataDe" onchange="renderTabela()">
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Até</span>
+    <input type="date" id="fDataAte" onchange="renderTabela()">
+  </div>
+  <button class="btn-clear" onclick="limparFiltros()">Limpar filtros</button>
 </div>
 
-<div class="main">
-  <div class="rc" id="rc"></div>
-  <div class="tw" id="tw">
-    <div class="state"><div class="si">⚖</div><div class="st">Carregando...</div></div>
+<!-- TABLE -->
+<div class="table-section">
+  <div class="result-count" id="rc"></div>
+  <div class="table-wrap" id="tw">
+    <div class="state">
+      <div class="state-icon">⚖</div>
+      <div class="state-title">Carregando dados...</div>
+      <div class="state-sub">Buscando movimentações na planilha.</div>
+    </div>
   </div>
 </div>
 
+<!-- FOOTER -->
 <footer class="footer">
-  <div class="ft">Cardoso Rosa & Capuzzo · Thales · Adriana · Amauri</div>
-  <div style="display:flex;gap:16px">
-    <a class="fl2" href="https://escritorioonline.jusbrasil.com.br/publicacoes-e-andamentos" target="_blank">JusBrasil</a>
-    <a class="fl2" id="ls" href="#" target="_blank">Planilha</a>
+  <div class="footer-text">Cardoso Rosa & Capuzzo · OAB/MG · Thales 228789 · Adriana 199462 · Amauri 237943</div>
+  <div class="footer-links">
+    <a class="footer-link" href="https://escritorioonline.jusbrasil.com.br/publicacoes-e-andamentos" target="_blank">JusBrasil →</a>
+    <a class="footer-link" id="lkSheets" href="#" target="_blank">Planilha →</a>
   </div>
 </footer>
 
 <script>
 const SID = '1DI-P7_8HywISFjYDNZJQtx1gOrJBIzh6FeDJi3KddUI';
-document.getElementById('ls').href = 'https://docs.google.com/spreadsheets/d/' + SID;
+document.getElementById('lkSheets').href = 'https://docs.google.com/spreadsheets/d/' + SID;
 
 let dados = [], fTipo = 'todos', fAdv = 'todos';
 
 async function carregarDados() {
-  const btn = document.getElementById('btnRefresh');
+  const btn  = document.getElementById('btnSync');
+  const icon = document.getElementById('syncIcon');
   btn.disabled = true;
-  document.getElementById('btnText').innerHTML = '<span class="spinner"></span>';
+  icon.classList.add('spin');
+
   try {
-    const r = await fetch('https://docs.google.com/spreadsheets/d/' + SID + '/gviz/tq?tqx=out:json&t=' + Date.now());
+    const url = 'https://docs.google.com/spreadsheets/d/' + SID + '/gviz/tq?tqx=out:json&headers=1&t=' + Date.now();
+    const r   = await fetch(url, { mode: 'cors', cache: 'no-cache' });
     const raw = await r.text();
-    const j = JSON.parse(raw.replace(/^[^(]+\(/, '').replace(/\);?\s*$/, ''));
+    const j   = JSON.parse(raw.replace(/^[^(]+\(/, '').replace(/\);?\s*$/, ''));
+
     dados = (j.table.rows || []).map(row => {
       const c = row.c || [];
       return {
-        data: c[0]?(c[0].f||c[0].v||''):'',
-        advogado: c[1]?(c[1].v||'Thales'):'Thales',
-        numero: c[2]?(c[2].v||''):'',
-        autor: c[3]?(c[3].v||''):'',
-        reu: c[4]?(c[4].v||''):'',
-        tipoAcao: c[5]?(c[5].v||''):'',
-        tipo: c[6]?(c[6].v||''):'',
-        resumo: c[7]?(c[7].v||''):'',
-        tribunal: c[8]?(c[8].v||''):'',
-        fonte: c[9]?(c[9].v||''):''
+        data:     c[0] ? (c[0].f || c[0].v || '') : '',
+        advogado: c[1] ? (c[1].v || 'Thales') : 'Thales',
+        numero:   c[2] ? (c[2].v || '') : '',
+        autor:    c[3] ? (c[3].v || '') : '',
+        reu:      c[4] ? (c[4].v || '') : '',
+        tipoAcao: c[5] ? (c[5].v || '') : '',
+        tipo:     c[6] ? (c[6].v || '') : '',
+        resumo:   c[7] ? (c[7].v || '') : '',
+        tribunal: c[8] ? (c[8].v || '') : '',
+        fonte:    c[9] ? (c[9].v || '') : ''
       };
     }).filter(r => r.numero && r.numero !== 'Numero');
-    atualizarStats(); renderTabela();
+
+    // Atualiza timestamp
+    const now = new Date();
+    document.getElementById('updatedTime').textContent = 'Atualizado ' +
+      now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+    atualizarStats();
+    renderTabela();
+
   } catch(e) {
-    document.getElementById('tw').innerHTML = '<div class="state"><div class="si">⚠</div><div class="st">Erro ao carregar</div><div class="ss">Verifique se a planilha esta publica: Planilha → Compartilhar → Qualquer pessoa com o link pode ver</div></div>';
+    document.getElementById('tw').innerHTML = `
+      <div class="state">
+        <div class="state-icon">⚠</div>
+        <div class="state-title">Erro ao carregar</div>
+        <div class="state-sub">Verifique se a planilha está pública (Compartilhar → Qualquer pessoa com o link):<br>Planilha → Compartilhar → Qualquer pessoa com o link pode ver</div>
+      </div>`;
+    document.getElementById('updatedTime').textContent = 'Verifique a planilha';
   }
+
   btn.disabled = false;
-  document.getElementById('btnText').textContent = 'Atualizar';
+  icon.classList.remove('spin');
 }
 
 function filtrarTipo(t) {
   fTipo = t;
-  document.querySelectorAll('.stat').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.stat-card').forEach(s => s.classList.remove('active'));
   document.querySelector('.s-' + t)?.classList.add('active');
   renderTabela();
 }
@@ -200,15 +651,16 @@ function filtrarTipo(t) {
 function filtrarAdv(a) {
   fAdv = a;
   document.querySelectorAll('.adv-badge').forEach(b => b.classList.remove('active'));
-  const idx = {todos:0,Thales:1,Adriana:2,Amauri:3};
-  document.querySelectorAll('.adv-badge')[idx[a]||0]?.classList.add('active');
-  atualizarStats(); renderTabela();
+  const idx = { todos: 0, Thales: 1, Adriana: 2, Amauri: 3 };
+  document.querySelectorAll('.adv-badge')[idx[a] || 0]?.classList.add('active');
+  atualizarStats();
+  renderTabela();
 }
 
 function limparFiltros() {
   ['fBusca','fTribunal','fDataDe','fDataAte'].forEach(id => document.getElementById(id).value = '');
   fTipo = 'todos'; fAdv = 'todos';
-  document.querySelectorAll('.stat').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.stat-card').forEach(s => s.classList.remove('active'));
   document.querySelector('.s-todos')?.classList.add('active');
   document.querySelectorAll('.adv-badge').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.adv-badge')[0]?.classList.add('active');
@@ -220,15 +672,16 @@ function getFiltrados() {
   const trib  = document.getElementById('fTribunal').value;
   const dDe   = document.getElementById('fDataDe').value;
   const dAte  = document.getElementById('fDataAte').value;
+
   return dados.filter(p => {
     if (fTipo !== 'todos' && p.tipo !== fTipo) return false;
     if (fAdv  !== 'todos' && p.advogado !== fAdv) return false;
     if (trib && p.tribunal !== trib) return false;
     if (busca && !(p.numero+p.autor+p.reu+p.resumo+p.tipoAcao+p.advogado).toLowerCase().includes(busca)) return false;
     if (dDe || dAte) {
-      const pt = (p.data||'').split('/');
+      const pt = (p.data || '').split('/');
       if (pt.length >= 3) {
-        const dp = pt[2].substring(0,4)+'-'+pt[1]+'-'+pt[0];
+        const dp = pt[2].substring(0,4) + '-' + pt[1] + '-' + pt[0];
         if (dDe && dp < dDe) return false;
         if (dAte && dp > dAte) return false;
       }
@@ -240,32 +693,72 @@ function getFiltrados() {
 function atualizarStats() {
   const base = fAdv === 'todos' ? dados : dados.filter(p => p.advogado === fAdv);
   ['todos','sentenca','decisao','despacho','prazo','audiencia','contestacao','publicacao','andamento'].forEach(t => {
-    const el = document.getElementById('st-'+t);
+    const el = document.getElementById('st-' + t);
     if (el) el.textContent = t === 'todos' ? base.length : base.filter(p => p.tipo === t).length;
   });
 }
 
 function renderTabela() {
-  const f = getFiltrados();
-  document.getElementById('rc').textContent = f.length + ' resultado(s)';
+  const f    = getFiltrados();
+  const wrap = document.getElementById('tw');
+  document.getElementById('rc').textContent = f.length.toLocaleString('pt-BR') + ' resultado(s)';
+
   if (!f.length) {
-    document.getElementById('tw').innerHTML = '<div class="state"><div class="si">✓</div><div class="st">Nenhum resultado</div><div class="ss">Tente outros filtros.</div></div>';
+    wrap.innerHTML = '<div class="state"><div class="state-icon">✓</div><div class="state-title">Nenhum resultado</div><div class="state-sub">Tente outros filtros.</div></div>';
     return;
   }
-  const lb = {sentenca:'Sentenca',decisao:'Decisao',despacho:'Despacho',prazo:'Prazo',audiencia:'Audiencia',contestacao:'Contestacao',publicacao:'Publicacao',andamento:'Andamento'};
-  const ac = {Thales:'aT',Adriana:'aA',Amauri:'aM'};
-  let h = '<table><thead><tr><th onclick="ord(\'numero\')">Processo</th><th onclick="ord(\'advogado\')">Advogado</th><th onclick="ord(\'autor\')">Autor</th><th onclick="ord(\'reu\')">Reu</th><th onclick="ord(\'tipoAcao\')">Tipo Acao</th><th onclick="ord(\'tipo\')">Classificacao</th><th>Resumo</th><th onclick="ord(\'data\')">Data</th></tr></thead><tbody>';
+
+  const lb = { sentenca:'Sentença', decisao:'Decisão', despacho:'Despacho', prazo:'Prazo', audiencia:'Audiência', contestacao:'Contestação', publicacao:'Publicação', andamento:'Andamento' };
+  const ac = { Thales:'aT', Adriana:'aA', Amauri:'aM' };
+
+  let h = `<table>
+    <thead><tr>
+      <th onclick="ord('numero')">Processo</th>
+      <th onclick="ord('advogado')">Advogado</th>
+      <th onclick="ord('autor')">Autor</th>
+      <th onclick="ord('reu')">Réu</th>
+      <th onclick="ord('tipoAcao')">Tipo de Ação</th>
+      <th onclick="ord('tipo')">Classificação</th>
+      <th>Resumo</th>
+      <th onclick="ord('data')">Data</th>
+    </tr></thead><tbody>`;
+
   f.forEach(p => {
-    const t = p.tipo||'andamento', l = lb[t]||t, a = p.advogado||'Thales', ac2 = ac[a]||'aT';
-    const lk = 'https://www.jusbrasil.com.br/processos/search?q='+encodeURIComponent(p.numero);
-    h += `<tr><td class="tn"><a href="${lk}" target="_blank">${p.numero}</a><div class="ts">${p.tribunal} · ${p.fonte}</div></td><td><span class="ap ${ac2}">${a}</span></td><td style="font-size:12px;color:var(--text)">${p.autor||'—'}</td><td style="font-size:12px;color:var(--text)">${p.reu||'—'}</td><td><span class="badge b-${t}">${p.tipoAcao||l}</span></td><td><span class="badge b-${t}">${l}</span></td><td style="font-size:12px;color:var(--text-dim);max-width:260px">${(p.resumo||'').substring(0,100)}</td><td style="font-family:var(--mono);font-size:10px;color:var(--text-dim);white-space:nowrap">${p.data}</td></tr>`;
+    const t  = p.tipo || 'andamento';
+    const l  = lb[t] || t;
+    const a  = p.advogado || 'Thales';
+    const ac2 = ac[a] || 'aT';
+    const lk = 'https://www.jusbrasil.com.br/processos/busca?q=' + encodeURIComponent(p.numero);
+
+    h += `<tr>
+      <td class="td-num">
+        <a href="${lk}" target="_blank">${p.numero}</a>
+        <div class="td-tribunal">${p.tribunal} · ${p.fonte}</div>
+      </td>
+      <td><span class="adv-pill ${ac2}">${a}</span></td>
+      <td style="font-size:13px;color:var(--text)">${p.autor || '—'}</td>
+      <td style="font-size:13px;color:var(--text)">${p.reu || '—'}</td>
+      <td><span class="badge b-${t}">${p.tipoAcao || l}</span></td>
+      <td><span class="badge b-${t}">${l}</span></td>
+      <td class="td-resumo">${(p.resumo || '').substring(0, 100)}</td>
+      <td class="td-date">${p.data}</td>
+    </tr>`;
   });
+
   h += '</tbody></table>';
-  document.getElementById('tw').innerHTML = h;
+  wrap.innerHTML = h;
 }
 
-let sc='',sa=true;
-function ord(c){if(sc===c)sa=!sa;else{sc=c;sa=true;}dados.sort((a,b)=>{const va=(a[c]||'').toString().toLowerCase(),vb=(b[c]||'').toString().toLowerCase();return sa?va.localeCompare(vb):vb.localeCompare(va);});renderTabela();}
+let sc = '', sa = true;
+function ord(c) {
+  if (sc === c) sa = !sa; else { sc = c; sa = true; }
+  dados.sort((a, b) => {
+    const va = (a[c] || '').toString().toLowerCase();
+    const vb = (b[c] || '').toString().toLowerCase();
+    return sa ? va.localeCompare(vb) : vb.localeCompare(va);
+  });
+  renderTabela();
+}
 
 window.addEventListener('load', carregarDados);
 </script>
