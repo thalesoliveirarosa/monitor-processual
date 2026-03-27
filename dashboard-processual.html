@@ -1522,25 +1522,24 @@ async function salvarAlvara() {
 
 
 // ── SENHA ────────────────────────────────────────────────────
-(function() {
+window.verificarSenha = function() {
   const SENHA = '1500Brasil';
-  const KEY   = 'crc_auth';
-  const overlay = document.getElementById('loginOverlay');
-  if (sessionStorage.getItem(KEY) === 'ok') {
-    overlay.style.display = 'none';
+  const val = document.getElementById('loginSenha').value;
+  if (val === SENHA) {
+    sessionStorage.setItem('crc_auth', 'ok');
+    document.getElementById('loginOverlay').style.display = 'none';
+  } else {
+    document.getElementById('loginErro').style.display = 'block';
+    document.getElementById('loginSenha').value = '';
+    document.getElementById('loginSenha').focus();
   }
-  window.verificarSenha = function() {
-    const val = document.getElementById('loginSenha').value;
-    if (val === SENHA) {
-      sessionStorage.setItem(KEY, 'ok');
-      overlay.style.display = 'none';
-    } else {
-      document.getElementById('loginErro').style.display = 'block';
-      document.getElementById('loginSenha').value = '';
-      document.getElementById('loginSenha').focus();
-    }
-  };
-})();
+};
+// Verifica sessão ao carregar
+document.addEventListener('DOMContentLoaded', function() {
+  if (sessionStorage.getItem('crc_auth') === 'ok') {
+    document.getElementById('loginOverlay').style.display = 'none';
+  }
+});
 
 window.addEventListener('load', carregarDados);
 </script>
