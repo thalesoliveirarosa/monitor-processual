@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monitor Processual · Cardoso Rosa & Capuzzo</title>
+<title>CRC - Monitor Processual</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -514,11 +514,63 @@ td { padding: 12px 16px; vertical-align: middle; }
   .valor-original    { font-size:10px; color:var(--text-muted); }
   .disclaimer        { font-size:10px; color:var(--text-muted); padding:8px 16px; font-style:italic; }
 
+
+  /* ── LOGIN ── */
+  .login-overlay {
+    position:fixed; inset:0; background:var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    z-index:9999;
+  }
+  .login-box {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:16px; padding:40px 48px; width:360px;
+    display:flex; flex-direction:column; align-items:center; gap:20px;
+    box-shadow:0 24px 64px rgba(0,0,0,.4);
+  }
+  .login-icon {
+    width:52px; height:44px;
+    background:linear-gradient(135deg,var(--amber),var(--amber2));
+    border-radius:12px; display:flex; align-items:center;
+    justify-content:center; font-weight:700; font-size:13px; color:#000;
+  }
+  .login-title { font-size:18px; font-weight:700; color:var(--text); text-align:center; }
+  .login-sub { font-size:13px; color:var(--text-dim); text-align:center; margin-top:-10px; }
+  .login-input {
+    width:100%; background:var(--surface2); border:1px solid var(--border2);
+    border-radius:var(--radius-sm); padding:11px 14px;
+    font-family:var(--font); font-size:14px; color:var(--text);
+    outline:none; transition:border-color .15s; text-align:center; letter-spacing:.1em;
+  }
+  .login-input:focus { border-color:var(--amber); }
+  .login-btn {
+    width:100%; padding:12px; background:var(--amber); color:#000;
+    border:none; border-radius:var(--radius-sm); font-size:14px;
+    font-weight:600; cursor:pointer; transition:all .15s; font-family:var(--font);
+  }
+  .login-btn:hover { background:var(--amber2); }
+  .login-error { font-size:12px; color:var(--red); display:none; }
+
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
+
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-icon">CRC</div>
+    <div>
+      <div class="login-title">CRC - Monitor Processual</div>
+      <div class="login-sub">Cardoso Rosa & Capuzzo</div>
+    </div>
+    <input class="login-input" type="password" id="loginSenha"
+           placeholder="••••••••••••"
+           onkeydown="if(event.key==='Enter') verificarSenha()">
+    <button class="login-btn" onclick="verificarSenha()">Entrar</button>
+    <div class="login-error" id="loginErro">Senha incorreta. Tente novamente.</div>
+  </div>
+</div>
+
 <header class="header">
   <div class="brand">
     <div class="brand-icon">CRC</div>
@@ -815,6 +867,11 @@ td { padding: 12px 16px; vertical-align: middle; }
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         <input type="text" id="alvBusca" placeholder="Buscar por processo, nome ou condomínio..." oninput="renderAlvaras()">
       </div>
+      <select id="alvFiltroTipo" onchange="renderAlvaras()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;font-family:var(--font);font-size:13px;color:var(--text);outline:none">
+        <option value="">Todos os tipos</option>
+        <option value="Garantidora">Garantidora</option>
+        <option value="Cliente Direto">Cliente Direto</option>
+      </select>
       <select id="alvFiltroStatus" onchange="renderAlvaras()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;font-family:var(--font);font-size:13px;color:var(--text);outline:none">
         <option value="">Todos os status</option>
         <option value="Aguardando">Aguardando</option>
@@ -851,7 +908,7 @@ async function carregarDados() {
   icon.classList.add('spin');
 
   try {
-    const url = 'https://docs.google.com/spreadsheets/d/' + SID + '/gviz/tq?tqx=out:json&headers=1&t=' + Date.now();
+    const url = 'https://docs.google.com/spreadsheets/d/' + SID + '/gviz/tq?tqx=out:json&sheet=Processos&t=' + Date.now();
     const r   = await fetch(url, { mode: 'cors', cache: 'no-cache' });
     const raw = await r.text();
     const j   = JSON.parse(raw.replace(/^[^(]+\(/, '').replace(/\);?\s*$/, ''));
@@ -1139,9 +1196,11 @@ function atualizarStatsAlvaras() {
 function renderAlvaras() {
   const busca  = (document.getElementById('alvBusca')?.value || '').toLowerCase();
   const status = document.getElementById('alvFiltroStatus')?.value || '';
+  const tipo   = document.getElementById('alvFiltroTipo')?.value || '';
 
   const f = dadosAlvaras.filter(a => {
     if (status && a.status !== status) return false;
+    if (tipo   && a.tipo   !== tipo)   return false;
     if (busca) {
       const txt = (a.processo+a.nome+a.condominio+a.garantidora+a.cpf).toLowerCase();
       if (!txt.includes(busca)) return false;
@@ -1322,6 +1381,28 @@ async function salvarAlvara() {
     st.style.color = 'var(--red)';
   }
 }
+
+
+// ── SENHA ────────────────────────────────────────────────────
+(function() {
+  const SENHA = '1500Brasil';
+  const KEY   = 'crc_auth';
+  const overlay = document.getElementById('loginOverlay');
+  if (sessionStorage.getItem(KEY) === 'ok') {
+    overlay.style.display = 'none';
+  }
+  window.verificarSenha = function() {
+    const val = document.getElementById('loginSenha').value;
+    if (val === SENHA) {
+      sessionStorage.setItem(KEY, 'ok');
+      overlay.style.display = 'none';
+    } else {
+      document.getElementById('loginErro').style.display = 'block';
+      document.getElementById('loginSenha').value = '';
+      document.getElementById('loginSenha').focus();
+    }
+  };
+})();
 
 window.addEventListener('load', carregarDados);
 </script>
