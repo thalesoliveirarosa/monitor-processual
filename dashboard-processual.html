@@ -852,6 +852,66 @@ td { padding: 12px 16px; vertical-align: middle; }
         <input type="text" id="fObs" placeholder="Observações adicionais...">
       </div>
 
+      <div class="form-group" style="grid-column:1/-1"><hr class="form-divider"></div>
+      <div class="form-section-title">Tipo de Alvará & Valor Total</div>
+
+      <div class="form-group">
+        <label>Integral ou Parcial</label>
+        <select id="fTipoAlvara">
+          <option value="Integral">Integral — dívida total</option>
+          <option value="Parcial">Parcial — parte da dívida</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Valor Total da Dívida (R$)</label>
+        <input type="text" id="fValorTotalDivida" placeholder="0,00 — preencher se parcial">
+      </div>
+
+      <div class="form-group" style="grid-column:1/-1"><hr class="form-divider"></div>
+      <div class="form-section-title">Repasse</div>
+
+      <div class="form-group">
+        <label>Status Repasse</label>
+        <select id="fStatusRepasse">
+          <option value="Pendente">Pendente</option>
+          <option value="Repassado">Repassado</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Data Repasse</label>
+        <input type="date" id="fDataRepasse">
+      </div>
+      <div class="form-group">
+        <label>Valor Repassado (R$)</label>
+        <input type="text" id="fValorRepassado" placeholder="0,00">
+      </div>
+
+      <!-- Só Garantidora -->
+      <div class="form-group" id="campoRepassadoPara">
+        <label>Repassado Para</label>
+        <select id="fRepassadoPara">
+          <option value="">Selecione...</option>
+          <option>Atlas</option>
+          <option>Correta</option>
+          <option>Ambas (Atlas + Correta)</option>
+        </select>
+      </div>
+
+      <!-- Só Cliente Direto -->
+      <div class="form-group" id="campoHonorarios" style="display:none">
+        <label>% Honorários acordado</label>
+        <input type="number" id="fPctHonorarios" placeholder="Ex: 20" min="0" max="100"
+               oninput="calcularHonorarios()">
+      </div>
+      <div class="form-group" id="campoValorHon" style="display:none">
+        <label>Valor Honorários (auto)</label>
+        <input type="text" id="fValorHonorarios" readonly placeholder="Calculado automaticamente" style="opacity:.6">
+      </div>
+      <div class="form-group" id="campoValorLiq" style="display:none">
+        <label>Valor Líquido ao Cliente (auto)</label>
+        <input type="text" id="fValorLiquido" readonly placeholder="Calculado automaticamente" style="opacity:.6">
+      </div>
+
       <div class="form-actions">
         <div id="fStatus" style="font-size:12px;color:var(--text-dim);align-self:center"></div>
         <button class="btn-cancelar" onclick="fecharFormAlvara()">Cancelar</button>
@@ -1116,17 +1176,23 @@ async function carregarAlvaras() {
       const c = row.c || [];
       const v = i => c[i] ? (c[i].f || c[i].v || '') : '';
       return {
-        id:             v(0),  dataCad:     v(1),
-        tipo:           v(2),  garantidora: v(3),
-        condominio:     v(4),  bloco:       v(5),
-        apt:            v(6),  nome:        v(7),
-        cpf:            v(8),  processo:    v(9),
-        tribunal:       v(10), origem:      v(11),
-        dataOrigem:     v(12), valorSentenca: parseFloat(String(v(13)).replace(',','.')||0),
-        dataProcuracao: v(14), dadosBancarios: v(15),
-        dataExpedicao:  v(16), dataRecebimento: v(17),
-        valorRecebido:  parseFloat(String(v(18)).replace(',','.')||0),
-        status:         v(19), observacao:  v(20)
+        id:              v(0),  dataCad:        v(1),
+        tipo:            v(2),  garantidora:    v(3),
+        condominio:      v(4),  bloco:          v(5),
+        apt:             v(6),  nome:           v(7),
+        cpf:             v(8),  processo:       v(9),
+        tribunal:        v(10), origem:         v(11),
+        dataOrigem:      v(12), valorSentenca:  parseFloat(String(v(13)).replace(',','.')||0),
+        dataProcuracao:  v(14), dadosBancarios: v(15),
+        dataExpedicao:   v(16), dataRecebimento: v(17),
+        valorRecebido:   parseFloat(String(v(18)).replace(',','.')||0),
+        status:          v(19), observacao:     v(20),
+        tipoAlvara:      v(21), valorTotalDivida: parseFloat(String(v(22)).replace(',','.')||0),
+        statusRepasse:   v(23), dataRepasse:    v(24),
+        valorRepassado:  parseFloat(String(v(25)).replace(',','.')||0),
+        repassadoPara:   v(26), pctHonorarios:  v(27),
+        valorHonorarios: parseFloat(String(v(28)).replace(',','.')||0),
+        valorLiquido:    parseFloat(String(v(29)).replace(',','.')||0)
       };
     }).filter(r => r.id && r.id !== 'ID');
 
@@ -1219,7 +1285,7 @@ function renderAlvaras() {
     <thead><tr>
       <th>Processo</th><th>Nome / Parte</th><th>Origem</th>
       <th>Valor Sentença</th><th>Valor Atualizado (est.)</th>
-      <th>Status</th><th>Andamento</th>
+      <th>Recebimento</th><th>Repasse</th><th>Andamento</th>
     </tr></thead><tbody>`;
 
   f.forEach(a => {
@@ -1238,6 +1304,36 @@ function renderAlvaras() {
       : a.nome;
 
     // Andamento resumido
+    // Badge Integral/Parcial
+    const tipoAlv = a.tipoAlvara || 'Integral';
+    const badgeAlv = tipoAlv === 'Parcial'
+      ? '<span style="display:inline-block;padding:1px 7px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.3)">PARCIAL</span>'
+      : '<span style="display:inline-block;padding:1px 7px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(0,196,140,.12);color:var(--green);border:1px solid rgba(0,196,140,.3)">INTEGRAL</span>';
+
+    // Progresso parcial
+    let progressoStr = '';
+    const vtd = parseFloat(a.valorTotalDivida || 0);
+    const vrec = parseFloat(a.valorRecebido || a.valorSentenca || 0);
+    if (tipoAlv === 'Parcial' && vtd > 0 && vrec > 0) {
+      const pct = Math.min(100, (vrec / vtd * 100)).toFixed(0);
+      progressoStr = `<div style="margin-top:6px">
+        <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px">${fmtBRL(vrec)} de ${fmtBRL(vtd)} (${pct}%)</div>
+        <div style="background:var(--border);border-radius:4px;height:4px;width:100%">
+          <div style="background:var(--amber);height:4px;border-radius:4px;width:${pct}%"></div>
+        </div>
+      </div>`;
+    }
+
+    // Repasse
+    const stRep = a.statusRepasse || 'Pendente';
+    const badgeRep = stRep === 'Repassado'
+      ? '<span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(0,196,140,.12);color:var(--green);border:1px solid rgba(0,196,140,.3)">✓ Repassado</span>'
+      : '<span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:700;background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.3)">⏳ Pendente</span>';
+
+    const repasseDetalhe = a.repassadoPara
+      ? `<div style="font-size:10px;color:var(--text-muted);margin-top:3px">Para: ${a.repassadoPara}</div>`
+      : (a.pctHonorarios ? `<div style="font-size:10px;color:var(--text-muted);margin-top:3px">Hon: ${a.pctHonorarios}% · Líq: ${fmtBRL(parseFloat(a.valorLiquido||0))}</div>` : '');
+
     const etapas = [];
     if (a.dataProcuracao)   etapas.push('Proc: ' + a.dataProcuracao);
     if (a.dadosBancarios)   etapas.push('Banco: ' + a.dadosBancarios);
@@ -1249,6 +1345,7 @@ function renderAlvaras() {
       <td class="td-num">
         <a href="${lk}" target="_blank">${a.processo}</a>
         <div class="td-tribunal">${a.tribunal}</div>
+        <div style="margin-top:4px">${badgeAlv}</div>
       </td>
       <td>
         <div style="font-size:13px;color:var(--text);font-weight:500">${idParte}</div>
@@ -1259,10 +1356,18 @@ function renderAlvaras() {
         <div style="font-size:12px;color:var(--text)">${a.origem||'—'}</div>
         <div style="font-size:11px;color:var(--text-dim)">${a.dataOrigem||''}</div>
       </td>
-      <td style="font-size:13px;font-weight:600;color:var(--text)">${fmtBRL(a.valorSentenca)}</td>
+      <td>
+        <div style="font-size:13px;font-weight:600;color:var(--text)">${fmtBRL(a.valorSentenca)}</div>
+        ${progressoStr}
+      </td>
       <td>${valAtStr}</td>
       <td>${stat}
         ${a.status==='Recebido' && a.valorRecebido ? '<div style="font-size:11px;color:var(--green);margin-top:4px">'+fmtBRL(a.valorRecebido)+'</div>' : ''}
+      </td>
+      <td>
+        ${badgeRep}
+        ${repasseDetalhe}
+        ${a.dataRepasse ? '<div style="font-size:10px;color:var(--text-muted);margin-top:3px">'+a.dataRepasse+'</div>' : ''}
       </td>
       <td style="font-size:11px;color:var(--text-dim);line-height:1.6">${andamento}</td>
     </tr>`;
@@ -1289,7 +1394,6 @@ function trocarTipoParte() {
   els.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-      // Mostra/esconde os filhos do div
       el.childNodes.forEach(child => {
         if (child.classList) {
           child.style.display = (id === 'camposGarantidora' && tipo === 'Garantidora') ||
@@ -1298,6 +1402,28 @@ function trocarTipoParte() {
       });
     }
   });
+  // Campos de repasse por tipo
+  const isGarant = tipo === 'Garantidora';
+  const isCliente = tipo === 'Cliente Direto';
+  const showHide = (id, show) => { const el = document.getElementById(id); if(el) el.style.display = show ? '' : 'none'; };
+  showHide('campoRepassadoPara', isGarant);
+  showHide('campoHonorarios',    isCliente);
+  showHide('campoValorHon',      isCliente);
+  showHide('campoValorLiq',      isCliente);
+}
+
+function calcularHonorarios() {
+  const pct = parseFloat(document.getElementById('fPctHonorarios')?.value || 0) / 100;
+  const valRec = parseFloat((document.getElementById('fValorRecebido')?.value || '0').replace(',','.')) || 0;
+  const valSent = parseFloat((document.getElementById('fValorSentenca')?.value || '0').replace(',','.')) || 0;
+  const base = valRec || valSent || 0;
+  const hon = base * pct;
+  const liq = base - hon;
+  const fmt = v => v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  const elH = document.getElementById('fValorHonorarios');
+  const elL = document.getElementById('fValorLiquido');
+  if (elH) elH.value = pct > 0 ? fmt(hon) : '';
+  if (elL) elL.value = pct > 0 ? fmt(liq) : '';
 }
 
 function detectarTribunalForm() {
@@ -1314,7 +1440,9 @@ function limparFormAlvara() {
   ['fTipoParte','fGarantidora','fCondominio','fBloco','fApt','fTipoAcao',
    'fNome','fCpf','fProcesso','fTribunal','fOrigem','fDataOrigem',
    'fValorSentenca','fDataProcuracao','fDataDadosBanc','fDataExpedicao',
-   'fDataRecebimento','fValorRecebido','fObs'].forEach(id => {
+   'fDataRecebimento','fValorRecebido','fObs',
+   'fTipoAlvara','fValorTotalDivida','fStatusRepasse','fDataRepasse',
+   'fValorRepassado','fRepassadoPara','fPctHonorarios','fValorHonorarios','fValorLiquido'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -1344,12 +1472,21 @@ async function salvarAlvara() {
     origem:         document.getElementById('fOrigem').value,
     dataOrigem:     document.getElementById('fDataOrigem').value,
     valorSentenca:  document.getElementById('fValorSentenca').value.replace(',','.'),
-    dataProcuracao: document.getElementById('fDataProcuracao').value,
-    dadosBancarios: document.getElementById('fDataDadosBanc').value,
-    dataExpedicao:  document.getElementById('fDataExpedicao').value,
-    dataRecebimento:document.getElementById('fDataRecebimento').value,
-    valorRecebido:  document.getElementById('fValorRecebido').value.replace(',','.'),
-    observacao:     document.getElementById('fObs').value
+    dataProcuracao:  document.getElementById('fDataProcuracao').value,
+    dadosBancarios:  document.getElementById('fDataDadosBanc').value,
+    dataExpedicao:   document.getElementById('fDataExpedicao').value,
+    dataRecebimento: document.getElementById('fDataRecebimento').value,
+    valorRecebido:   document.getElementById('fValorRecebido').value.replace(',','.'),
+    observacao:      document.getElementById('fObs').value,
+    tipoAlvara:      document.getElementById('fTipoAlvara').value,
+    valorTotalDivida:document.getElementById('fValorTotalDivida').value.replace(',','.'),
+    statusRepasse:   document.getElementById('fStatusRepasse').value,
+    dataRepasse:     document.getElementById('fDataRepasse').value,
+    valorRepassado:  document.getElementById('fValorRepassado').value.replace(',','.'),
+    repassadoPara:   document.getElementById('fRepassadoPara')?.value || '',
+    pctHonorarios:   document.getElementById('fPctHonorarios')?.value || '',
+    valorHonorarios: document.getElementById('fValorHonorarios')?.value || '',
+    valorLiquido:    document.getElementById('fValorLiquido')?.value || 
   };
 
   if (!WEB_APP_URL) {
