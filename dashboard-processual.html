@@ -233,6 +233,8 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); min-
 .s-publicacao::after { background: var(--green); }
 .s-andamento .stat-val { color: var(--blue); }
 .s-andamento::after { background: var(--blue); }
+.s-alvara .stat-val { color: #e879f9; }
+.s-alvara::after { background: #e879f9; }
 
 /* ── FILTERS ── */
 .filters-section {
@@ -402,6 +404,7 @@ td { padding: 12px 16px; vertical-align: middle; }
 .b-contestacao { background: rgba(34,211,238,.12);  color: var(--cyan);   border: 1px solid rgba(34,211,238,.25); }
 .b-publicacao  { background: rgba(0,196,140,.12);   color: var(--green);  border: 1px solid rgba(0,196,140,.25); }
 .b-andamento   { background: rgba(77,159,255,.12);  color: var(--blue);   border: 1px solid rgba(77,159,255,.25); }
+.b-alvara      { background: rgba(232,121,249,.12); color: #e879f9; border: 1px solid rgba(232,121,249,.35); font-weight:700; }
 
 .td-resumo {
   font-size: 12px;
@@ -534,6 +537,11 @@ td { padding: 12px 16px; vertical-align: middle; }
   <div class="stat-card s-andamento" onclick="filtrarTipo('andamento')">
     <div class="stat-val" id="st-andamento">—</div>
     <div class="stat-label">Andamento</div>
+  </div>
+  <div class="stat-card s-alvara" onclick="filtrarTipo('alvara')">
+    <div class="stat-val" id="st-alvara">—</div>
+    <div class="stat-label">Alvará/RPV</div>
+    <div class="stat-sub">pagamentos</div>
   </div>
 </div>
 
@@ -674,7 +682,8 @@ function getFiltrados() {
   const dAte  = document.getElementById('fDataAte').value;
 
   return dados.filter(p => {
-    if (fTipo !== 'todos' && p.tipo !== fTipo) return false;
+    if (fTipo === 'alvara') { if (!isAlvara(p)) return false; }
+    else if (fTipo !== 'todos' && p.tipo !== fTipo) return false;
     if (fAdv  !== 'todos' && p.advogado !== fAdv) return false;
     if (trib && p.tribunal !== trib) return false;
     if (busca && !(p.numero+p.autor+p.reu+p.resumo+p.tipoAcao+p.advogado).toLowerCase().includes(busca)) return false;
@@ -690,12 +699,20 @@ function getFiltrados() {
   });
 }
 
+function isAlvara(p) {
+  const txt = ((p.resumo || '') + ' ' + (p.tipoAcao || '') + ' ' + (p.movimento || '')).toLowerCase();
+  return /alvará|alvara|rpv|levantamento|expediu.*pagamento|pagamento.*expedido/.test(txt);
+}
+
 function atualizarStats() {
   const base = fAdv === 'todos' ? dados : dados.filter(p => p.advogado === fAdv);
   ['todos','sentenca','decisao','despacho','prazo','audiencia','contestacao','publicacao','andamento'].forEach(t => {
     const el = document.getElementById('st-' + t);
     if (el) el.textContent = t === 'todos' ? base.length : base.filter(p => p.tipo === t).length;
   });
+  // Alvará/RPV — detectado por palavras-chave no resumo
+  const elA = document.getElementById('st-alvara');
+  if (elA) elA.textContent = base.filter(p => isAlvara(p)).length;
 }
 
 function renderTabela() {
@@ -708,7 +725,7 @@ function renderTabela() {
     return;
   }
 
-  const lb = { sentenca:'Sentença', decisao:'Decisão', despacho:'Despacho', prazo:'Prazo', audiencia:'Audiência', contestacao:'Contestação', publicacao:'Publicação', andamento:'Andamento' };
+  const lb = { sentenca:'Sentença', decisao:'Decisão', despacho:'Despacho', prazo:'Prazo', audiencia:'Audiência', contestacao:'Contestação', publicacao:'Publicação', andamento:'Andamento', alvara:'Alvará/RPV' };
   const ac = { Thales:'aT', Adriana:'aA', Amauri:'aM' };
 
   let h = `<table>
@@ -730,7 +747,7 @@ function renderTabela() {
     const ac2 = ac[a] || 'aT';
     const lk = 'https://www.jusbrasil.com.br/busca?q=' + encodeURIComponent(p.numero);
 
-    h += `<tr>
+    h += `<tr style="${isAlv ? 'border-left: 3px solid #e879f9;background:rgba(232,121,249,.04)' : ''}">
       <td class="td-num">
         <a href="${lk}" target="_blank">${p.numero}</a>
         <div class="td-tribunal">${p.tribunal} · ${p.fonte}</div>
