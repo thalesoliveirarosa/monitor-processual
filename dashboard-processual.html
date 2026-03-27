@@ -1182,17 +1182,17 @@ async function carregarAlvaras() {
         apt:             v(6),  nome:           v(7),
         cpf:             v(8),  processo:       v(9),
         tribunal:        v(10), origem:         v(11),
-        dataOrigem:      v(12), valorSentenca:  parseFloat(String(v(13)).replace(',','.')||0),
+        dataOrigem:      v(12), valorSentenca:  parseFloat(String(v(13)).replace(/\./g,'').replace(',','.')||0),
         dataProcuracao:  v(14), dadosBancarios: v(15),
         dataExpedicao:   v(16), dataRecebimento: v(17),
-        valorRecebido:   parseFloat(String(v(18)).replace(',','.')||0),
+        valorRecebido:   parseFloat(String(v(18)).replace(/\./g,'').replace(',','.')||0),
         status:          v(19), observacao:     v(20),
-        tipoAlvara:      v(21), valorTotalDivida: parseFloat(String(v(22)).replace(',','.')||0),
+        tipoAlvara:      v(21), valorTotalDivida: parseFloat(String(v(22)).replace(/\./g,'').replace(',','.')||0),
         statusRepasse:   v(23), dataRepasse:    v(24),
-        valorRepassado:  parseFloat(String(v(25)).replace(',','.')||0),
+        valorRepassado:  parseFloat(String(v(25)).replace(/\./g,'').replace(',','.')||0),
         repassadoPara:   v(26), pctHonorarios:  v(27),
-        valorHonorarios: parseFloat(String(v(28)).replace(',','.')||0),
-        valorLiquido:    parseFloat(String(v(29)).replace(',','.')||0)
+        valorHonorarios: parseFloat(String(v(28)).replace(/\./g,'').replace(',','.')||0),
+        valorLiquido:    parseFloat(String(v(29)).replace(/\./g,'').replace(',','.')||0)
       };
     }).filter(r => r.id && r.id !== 'ID');
 
