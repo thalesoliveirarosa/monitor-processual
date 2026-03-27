@@ -1043,6 +1043,7 @@ function renderTabela() {
     </tr></thead><tbody>`;
 
   f.forEach(p => {
+    const isAlv = typeof isAlvara === 'function' ? isAlvara(p) : false;
     const t  = p.tipo || 'andamento';
     const l  = lb[t] || t;
     const a  = p.advogado || 'Thales';
