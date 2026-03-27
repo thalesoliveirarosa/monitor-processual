@@ -732,6 +732,11 @@ td { padding: 12px 16px; vertical-align: middle; }
       <div class="alv-stat-label">Valor Atualizado (est.)</div>
       <div class="alv-stat-sub">TJMG: INPC+1%/mês · TRT/TRF: SELIC</div>
     </div>
+    <div class="alv-stat" style="border-top:3px solid #e879f9">
+      <div class="alv-stat-val" id="alv-honorarios" style="color:#e879f9">R$ —</div>
+      <div class="alv-stat-label">Honorários CRC</div>
+      <div class="alv-stat-sub" id="alv-honorarios-sub">a receber · clientes diretos</div>
+    </div>
   </div>
 
   <!-- Formulário -->
@@ -1257,6 +1262,26 @@ function atualizarStatsAlvaras() {
   document.getElementById('alv-total').textContent = dadosAlvaras.length;
   document.getElementById('alv-val-total').textContent = fmtBRL(totalValorAguardando + totalValorRecebido);
   document.getElementById('alv-val-atualizado-total').textContent = fmtBRL(totalAtualizado);
+
+  // Honorários CRC — clientes diretos com honorários pendentes
+  const honPendente = dadosAlvaras
+    .filter(a => (a.tipo||'').toLowerCase().includes('cliente') && a.pctHonorarios && a.statusRepasse !== 'Repassado')
+    .reduce((s, a) => {
+      const pct = parseFloat(a.pctHonorarios||0) / 100;
+      const base2 = parseFloat(a.valorRecebido||0) || parseFloat(a.valorSentenca||0) || 0;
+      return s + (base2 * pct);
+    }, 0);
+  const honTotal = dadosAlvaras
+    .filter(a => (a.tipo||'').toLowerCase().includes('cliente') && a.pctHonorarios)
+    .reduce((s, a) => {
+      const pct = parseFloat(a.pctHonorarios||0) / 100;
+      const base2 = parseFloat(a.valorRecebido||0) || parseFloat(a.valorSentenca||0) || 0;
+      return s + (base2 * pct);
+    }, 0);
+  const elHon = document.getElementById('alv-honorarios');
+  const elHonSub = document.getElementById('alv-honorarios-sub');
+  if (elHon) elHon.textContent = fmtBRL(honPendente);
+  if (elHonSub) elHonSub.textContent = 'a receber · total: ' + fmtBRL(honTotal);
 }
 
 // ── RENDER TABELA ─────────────────────────────────────────────
@@ -1338,12 +1363,27 @@ function renderAlvaras() {
       ? `<div style="font-size:10px;color:var(--text-muted);margin-top:3px">Para: ${a.repassadoPara}</div>`
       : (a.pctHonorarios ? `<div style="font-size:10px;color:var(--text-muted);margin-top:3px">Hon: ${a.pctHonorarios}% · Líq: ${fmtBRL(parseFloat(a.valorLiquido||0))}</div>` : '');
 
+    // Andamento — timeline das etapas
     const etapas = [];
-    if (a.dataProcuracao)   etapas.push('Proc: ' + a.dataProcuracao);
-    if (a.dadosBancarios)   etapas.push('Banco: ' + a.dadosBancarios);
-    if (a.dataExpedicao)    etapas.push('Exp: ' + a.dataExpedicao);
-    if (a.dataRecebimento)  etapas.push('Rec: ' + a.dataRecebimento);
+    if (a.dataProcuracao)  etapas.push('<span style="color:var(--text-muted)">📋 Proc:</span> ' + a.dataProcuracao);
+    if (a.dadosBancarios)  etapas.push('<span style="color:var(--text-muted)">🏦 Banco:</span> ' + a.dadosBancarios);
+    if (a.dataExpedicao)   etapas.push('<span style="color:var(--cyan)">📄 Exp:</span> ' + a.dataExpedicao);
+    if (a.dataRecebimento) etapas.push('<span style="color:var(--green)">✅ Rec:</span> ' + a.dataRecebimento);
     const andamento = etapas.length ? etapas.join('<br>') : '<span style="color:var(--text-muted);font-size:11px">—</span>';
+
+    // Honorários para Cliente Direto
+    let honStr = '';
+    if ((a.tipo||'').toLowerCase().includes('cliente') && a.pctHonorarios) {
+      const pct = parseFloat(a.pctHonorarios||0) / 100;
+      const baseHon = parseFloat(a.valorRecebido||0) || parseFloat(a.valorSentenca||0) || 0;
+      const hon = baseHon * pct;
+      const liq = baseHon - hon;
+      honStr = `<div style="margin-top:6px;padding:6px 8px;background:rgba(232,121,249,.08);border-radius:6px;border:1px solid rgba(232,121,249,.2)">
+        <div style="font-size:10px;font-weight:700;color:#e879f9;margin-bottom:3px">HONORÁRIOS CRC · ${a.pctHonorarios}%</div>
+        <div style="font-size:11px;color:var(--text)">CRC recebe: <strong>${fmtBRL(hon)}</strong></div>
+        <div style="font-size:11px;color:var(--text-dim)">Cliente recebe: ${fmtBRL(liq)}</div>
+      </div>`;
+    }
 
     h += `<tr>
       <td class="td-num">
@@ -1372,6 +1412,7 @@ function renderAlvaras() {
         ${badgeRep}
         ${repasseDetalhe}
         ${a.dataRepasse ? '<div style="font-size:10px;color:var(--text-muted);margin-top:3px">'+a.dataRepasse+'</div>' : ''}
+        ${honStr}
       </td>
       <td style="font-size:11px;color:var(--text-dim);line-height:1.6">${andamento}</td>
     </tr>`;
