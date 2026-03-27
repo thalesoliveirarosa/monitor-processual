@@ -930,7 +930,7 @@ td { padding: 12px 16px; vertical-align: middle; }
       <select id="alvFiltroTipo" onchange="renderAlvaras()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;font-family:var(--font);font-size:13px;color:var(--text);outline:none">
         <option value="">Todos os tipos</option>
         <option value="Garantidora">Garantidora</option>
-        <option value="Cliente Direto">Cliente Direto</option>
+        <option value="Cliente Direto">Cliente Direto / Direito</option>
       </select>
       <select id="alvFiltroStatus" onchange="renderAlvaras()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;font-family:var(--font);font-size:13px;color:var(--text);outline:none">
         <option value="">Todos os status</option>
@@ -1267,7 +1267,11 @@ function renderAlvaras() {
 
   const f = dadosAlvaras.filter(a => {
     if (status && a.status !== status) return false;
-    if (tipo   && a.tipo   !== tipo)   return false;
+    if (tipo) {
+      const tipoNorm = (a.tipo||'').toLowerCase().replace('direito','direto');
+      const filtroNorm = tipo.toLowerCase().replace('direito','direto');
+      if (tipoNorm !== filtroNorm) return false;
+    }
     if (busca) {
       const txt = (a.processo+a.nome+a.condominio+a.garantidora+a.cpf).toLowerCase();
       if (!txt.includes(busca)) return false;
