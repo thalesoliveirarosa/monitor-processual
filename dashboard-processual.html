@@ -459,6 +459,61 @@ td { padding: 12px 16px; vertical-align: middle; }
   .footer { padding: 12px 16px; }
   .updated-tag span { display: none; }
 }
+
+  /* ── TABS ── */
+  .main-tabs { display:flex; gap:0; border-bottom:1px solid var(--border); background:var(--surface); padding:0 28px; }
+  .main-tab { font-size:13px; font-weight:500; padding:14px 20px; cursor:pointer; border-bottom:2px solid transparent; color:var(--text-dim); transition:all .15s; background:none; border-top:none; border-left:none; border-right:none; }
+  .main-tab:hover { color:var(--text); }
+  .main-tab.active { color:var(--amber); border-bottom-color:var(--amber); }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+
+  /* ── ALVARÁS ── */
+  .alv-section { padding:24px 28px; }
+  .alv-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
+  .alv-title { font-size:16px; font-weight:600; color:var(--text); }
+  .alv-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:24px; }
+  .alv-stat { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 20px; }
+  .alv-stat-val { font-size:24px; font-weight:700; letter-spacing:-.02em; }
+  .alv-stat-label { font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:.06em; color:var(--text-dim); margin-top:4px; }
+  .alv-stat-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+  .alv-aguardando .alv-stat-val { color:var(--amber); }
+  .alv-recebido .alv-stat-val { color:var(--green); }
+  .alv-total-val .alv-stat-val { color:var(--blue); }
+  .alv-atualizado .alv-stat-val { color:var(--purple); }
+
+  /* Form alvará */
+  .alv-form-wrap { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:24px; margin-bottom:24px; display:none; }
+  .alv-form-wrap.open { display:block; }
+  .alv-form-title { font-size:14px; font-weight:600; color:var(--text); margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; }
+  .form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; }
+  .form-group { display:flex; flex-direction:column; gap:6px; }
+  .form-group label { font-size:11px; font-weight:600; color:var(--text-dim); text-transform:uppercase; letter-spacing:.05em; }
+  .form-group input, .form-group select, .form-group textarea {
+    background:var(--surface2); border:1px solid var(--border2); border-radius:var(--radius-sm);
+    padding:9px 12px; font-family:var(--font); font-size:13px; color:var(--text); outline:none; transition:border-color .15s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color:var(--amber); }
+  .form-group select option { background:var(--surface2); }
+  .form-divider { grid-column:1/-1; border:none; border-top:1px solid var(--border); margin:4px 0; }
+  .form-section-title { grid-column:1/-1; font-size:11px; font-weight:700; color:var(--amber); text-transform:uppercase; letter-spacing:.08em; margin-top:4px; }
+  .form-actions { grid-column:1/-1; display:flex; gap:10px; justify-content:flex-end; padding-top:8px; }
+  .btn-salvar { padding:9px 24px; background:var(--amber); color:#000; border:none; border-radius:var(--radius-sm); font-size:13px; font-weight:600; cursor:pointer; transition:all .15s; }
+  .btn-salvar:hover { background:var(--amber2); }
+  .btn-cancelar { padding:9px 16px; background:transparent; color:var(--text-dim); border:1px solid var(--border2); border-radius:var(--radius-sm); font-size:13px; cursor:pointer; transition:all .15s; }
+  .btn-cancelar:hover { border-color:var(--red); color:var(--red); }
+  #camposGarantidora, #camposCliente { display:none; }
+
+  /* Tabela alvarás */
+  .alv-table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+  .alv-filters { display:flex; gap:10px; padding:14px 16px; border-bottom:1px solid var(--border); flex-wrap:wrap; align-items:center; }
+  .alv-badge-status { display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+  .status-aguardando { background:rgba(245,166,35,.12); color:var(--amber); border:1px solid rgba(245,166,35,.25); }
+  .status-recebido   { background:rgba(0,196,140,.12);  color:var(--green); border:1px solid rgba(0,196,140,.25); }
+  .valor-atualizado  { font-size:11px; color:var(--purple); font-weight:600; }
+  .valor-original    { font-size:10px; color:var(--text-muted); }
+  .disclaimer        { font-size:10px; color:var(--text-muted); padding:8px 16px; font-style:italic; }
+
 </style>
 </head>
 <body>
@@ -500,6 +555,14 @@ td { padding: 12px 16px; vertical-align: middle; }
 </header>
 
 <!-- STATS -->
+<!-- TABS -->
+<div class="main-tabs">
+  <button class="main-tab active" onclick="setTab('movimentacoes', this)">Movimentações</button>
+  <button class="main-tab" onclick="setTab('alvaras', this)">Alvarás & Pagamentos</button>
+</div>
+
+<!-- TAB: MOVIMENTAÇÕES -->
+<div id="tab-movimentacoes" class="tab-content active">
 <div class="stats-section">
   <div class="stat-card s-todos active" onclick="filtrarTipo('todos')">
     <div class="stat-val" id="st-todos">—</div>
@@ -585,6 +648,188 @@ td { padding: 12px 16px; vertical-align: middle; }
 </div>
 
 <!-- FOOTER -->
+</div><!-- /tab-movimentacoes -->
+
+<!-- TAB: ALVARÁS -->
+<div id="tab-alvaras" class="tab-content">
+<div class="alv-section">
+
+  <!-- Stats -->
+  <div class="alv-header">
+    <div class="alv-title">Alvarás & Pagamentos Judiciais</div>
+    <button class="btn-primary" onclick="abrirFormAlvara()">+ Novo Alvará</button>
+  </div>
+  <div class="alv-stats">
+    <div class="alv-stat alv-aguardando">
+      <div class="alv-stat-val" id="alv-aguardando">—</div>
+      <div class="alv-stat-label">Aguardando</div>
+      <div class="alv-stat-sub" id="alv-val-aguardando">R$ —</div>
+    </div>
+    <div class="alv-stat alv-recebido">
+      <div class="alv-stat-val" id="alv-recebido">—</div>
+      <div class="alv-stat-label">Recebidos</div>
+      <div class="alv-stat-sub" id="alv-val-recebido">R$ —</div>
+    </div>
+    <div class="alv-stat alv-total-val">
+      <div class="alv-stat-val" id="alv-total">—</div>
+      <div class="alv-stat-label">Total</div>
+      <div class="alv-stat-sub" id="alv-val-total">R$ —</div>
+    </div>
+    <div class="alv-stat alv-atualizado">
+      <div class="alv-stat-val" id="alv-val-atualizado-total">R$ —</div>
+      <div class="alv-stat-label">Valor Atualizado (est.)</div>
+      <div class="alv-stat-sub">TJMG: INPC+1%/mês · TRT/TRF: SELIC</div>
+    </div>
+  </div>
+
+  <!-- Formulário -->
+  <div class="alv-form-wrap" id="alvFormWrap">
+    <div class="alv-form-title">
+      <span>Cadastrar Novo Alvará</span>
+      <button class="btn-cancelar" onclick="fecharFormAlvara()">✕ Cancelar</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Tipo de Parte *</label>
+        <select id="fTipoParte" onchange="trocarTipoParte()">
+          <option value="">Selecione...</option>
+          <option value="Garantidora">Garantidora (condomínio)</option>
+          <option value="Cliente Direto">Cliente Direto</option>
+        </select>
+      </div>
+
+      <!-- Campos Garantidora -->
+      <div id="camposGarantidora" style="display:contents">
+        <div class="form-group">
+          <label>Garantidora</label>
+          <select id="fGarantidora">
+            <option value="">Selecione...</option>
+            <option>Atlas</option>
+            <option>Correta</option>
+            <option>Outra</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Condomínio</label>
+          <input type="text" id="fCondominio" placeholder="Nome do condomínio">
+        </div>
+        <div class="form-group">
+          <label>Bloco</label>
+          <input type="text" id="fBloco" placeholder="Ex: A">
+        </div>
+        <div class="form-group">
+          <label>Apt</label>
+          <input type="text" id="fApt" placeholder="Ex: 101">
+        </div>
+      </div>
+
+      <!-- Campos Cliente Direto -->
+      <div id="camposCliente" style="display:contents">
+        <div class="form-group">
+          <label>Tipo de Ação</label>
+          <input type="text" id="fTipoAcao" placeholder="Ex: Indenização, Trabalhista...">
+        </div>
+      </div>
+
+      <div class="form-group" style="grid-column:1/-1"><hr class="form-divider"></div>
+      <div class="form-section-title">Dados do Processo</div>
+
+      <div class="form-group" style="grid-column:span 2">
+        <label>Nome *</label>
+        <input type="text" id="fNome" placeholder="Nome completo">
+      </div>
+      <div class="form-group">
+        <label>CPF / CNPJ</label>
+        <input type="text" id="fCpf" placeholder="000.000.000-00">
+      </div>
+      <div class="form-group" style="grid-column:span 2">
+        <label>Número do Processo *</label>
+        <input type="text" id="fProcesso" placeholder="0000000-00.0000.0.00.0000" oninput="detectarTribunalForm()">
+      </div>
+      <div class="form-group">
+        <label>Tribunal (auto)</label>
+        <input type="text" id="fTribunal" readonly placeholder="Detectado automaticamente" style="opacity:.6">
+      </div>
+
+      <div class="form-group" style="grid-column:1/-1"><hr class="form-divider"></div>
+      <div class="form-section-title">Origem & Valor</div>
+
+      <div class="form-group">
+        <label>Origem *</label>
+        <select id="fOrigem">
+          <option value="">Selecione...</option>
+          <option>Sentença</option>
+          <option>Decisão</option>
+          <option>Acordo</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Data da Sentença/Decisão *</label>
+        <input type="date" id="fDataOrigem">
+      </div>
+      <div class="form-group">
+        <label>Valor da Sentença (R$) *</label>
+        <input type="text" id="fValorSentenca" placeholder="0,00">
+      </div>
+
+      <div class="form-group" style="grid-column:1/-1"><hr class="form-divider"></div>
+      <div class="form-section-title">Andamento do Alvará (opcional)</div>
+
+      <div class="form-group">
+        <label>Data Envio Procuração</label>
+        <input type="date" id="fDataProcuracao">
+      </div>
+      <div class="form-group">
+        <label>Data Envio Dados Bancários</label>
+        <input type="date" id="fDataDadosBanc">
+      </div>
+      <div class="form-group">
+        <label>Data Expedição Alvará</label>
+        <input type="date" id="fDataExpedicao">
+      </div>
+      <div class="form-group">
+        <label>Data Recebimento</label>
+        <input type="date" id="fDataRecebimento">
+      </div>
+      <div class="form-group">
+        <label>Valor Recebido (R$)</label>
+        <input type="text" id="fValorRecebido" placeholder="0,00">
+      </div>
+      <div class="form-group" style="grid-column:span 2">
+        <label>Observação</label>
+        <input type="text" id="fObs" placeholder="Observações adicionais...">
+      </div>
+
+      <div class="form-actions">
+        <div id="fStatus" style="font-size:12px;color:var(--text-dim);align-self:center"></div>
+        <button class="btn-cancelar" onclick="fecharFormAlvara()">Cancelar</button>
+        <button class="btn-salvar" onclick="salvarAlvara()">Salvar Alvará</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros tabela -->
+  <div class="alv-table-wrap">
+    <div class="alv-filters">
+      <div class="search-wrap" style="flex:1;min-width:180px">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="alvBusca" placeholder="Buscar por processo, nome ou condomínio..." oninput="renderAlvaras()">
+      </div>
+      <select id="alvFiltroStatus" onchange="renderAlvaras()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;font-family:var(--font);font-size:13px;color:var(--text);outline:none">
+        <option value="">Todos os status</option>
+        <option value="Aguardando">Aguardando</option>
+        <option value="Recebido">Recebido</option>
+      </select>
+    </div>
+    <div class="disclaimer">⚠ Valores atualizados são estimativas. TJMG cível: INPC + 1%/mês. TRT/TRF: SELIC ~0,875%/mês. Consulte planilha para valores exatos.</div>
+    <div id="alvTableContent">
+      <div class="state"><div class="state-icon">⚖</div><div class="state-title">Carregando alvarás...</div></div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /tab-alvaras -->
+
 <footer class="footer">
   <div class="footer-text">Cardoso Rosa & Capuzzo · OAB/MG · Thales 228789 · Adriana 199462 · Amauri 237943</div>
   <div class="footer-links">
@@ -775,6 +1020,307 @@ function ord(c) {
     return sa ? va.localeCompare(vb) : vb.localeCompare(va);
   });
   renderTabela();
+}
+
+
+// ══════════════════════════════════════════════════════════════
+// MÓDULO ALVARÁS
+// ══════════════════════════════════════════════════════════════
+
+const ALV_SHEET_ID  = '1mktE5gx7eWiz_0uQetl_R3O_Ufb-cneva-kPwsdQxtA';
+const ALV_SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + ALV_SHEET_ID + '/gviz/tq?tqx=out:json&sheet=Alvaras&t=';
+// COLE AQUI A URL DO WEB APP APÓS IMPLANTAR:
+let WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbw5SNuohAqrv1dQ8kaT-Apl3vrQiMHP7RLfmjgKsNTcgAfbGptiT6-Ds4cxqaHY91quiQ/exec';
+
+let dadosAlvaras = [];
+
+// ── TABS ──────────────────────────────────────────────────────
+function setTab(tab, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  el.classList.add('active');
+  if (tab === 'alvaras' && !dadosAlvaras.length) carregarAlvaras();
+}
+
+// ── CARREGA DADOS DA PLANILHA ─────────────────────────────────
+async function carregarAlvaras() {
+  try {
+    const r   = await fetch(ALV_SHEET_URL + Date.now());
+    const raw = await r.text();
+    const j   = JSON.parse(raw.replace(/^[^(]+\(/, '').replace(/\);?\s*$/, ''));
+    const rows = j.table.rows || [];
+
+    // Colunas: ID, DataCad, Tipo, Garantidora, Condominio, Bloco, Apt,
+    //          Nome, CPF, Processo, Tribunal, Origem, DataOrigem, ValorSentenca,
+    //          DataProc, DataDadosBanc, DataExp, DataReceb, ValorReceb, Status, Obs
+    dadosAlvaras = rows.map(row => {
+      const c = row.c || [];
+      const v = i => c[i] ? (c[i].f || c[i].v || '') : '';
+      return {
+        id:             v(0),  dataCad:     v(1),
+        tipo:           v(2),  garantidora: v(3),
+        condominio:     v(4),  bloco:       v(5),
+        apt:            v(6),  nome:        v(7),
+        cpf:            v(8),  processo:    v(9),
+        tribunal:       v(10), origem:      v(11),
+        dataOrigem:     v(12), valorSentenca: parseFloat(String(v(13)).replace(',','.')||0),
+        dataProcuracao: v(14), dadosBancarios: v(15),
+        dataExpedicao:  v(16), dataRecebimento: v(17),
+        valorRecebido:  parseFloat(String(v(18)).replace(',','.')||0),
+        status:         v(19), observacao:  v(20)
+      };
+    }).filter(r => r.id && r.id !== 'ID');
+
+    atualizarStatsAlvaras();
+    renderAlvaras();
+  } catch(e) {
+    document.getElementById('alvTableContent').innerHTML =
+      '<div class="state"><div class="state-icon">⚠</div><div class="state-title">Erro ao carregar</div><div class="state-sub">Verifique se a planilha "Alvaras" existe e está pública.</div></div>';
+  }
+}
+
+// ── CÁLCULO DE CORREÇÃO ───────────────────────────────────────
+function calcularValorAtualizado(alvara) {
+  if (!alvara.valorSentenca || !alvara.dataOrigem) return null;
+  if (alvara.status === 'Recebido' && alvara.valorRecebido) return alvara.valorRecebido;
+
+  const dataStr = String(alvara.dataOrigem);
+  let dataBase;
+  // Tenta formato dd/MM/yyyy ou yyyy-MM-dd
+  if (/\d{2}\/\d{2}\/\d{4}/.test(dataStr)) {
+    const p = dataStr.split('/');
+    dataBase = new Date(p[2], p[1]-1, p[0]);
+  } else {
+    dataBase = new Date(dataStr);
+  }
+  if (isNaN(dataBase)) return null;
+
+  const hoje   = new Date();
+  const meses  = (hoje.getFullYear() - dataBase.getFullYear()) * 12 + (hoje.getMonth() - dataBase.getMonth());
+  if (meses <= 0) return alvara.valorSentenca;
+
+  let taxaMensal;
+  const trib = alvara.tribunal || '';
+  if (/TJMG/.test(trib)) {
+    taxaMensal = 0.015; // INPC ~0,5% + juros 1% ao mês
+  } else {
+    taxaMensal = 0.00875; // SELIC ~10,5% ao ano
+  }
+
+  return alvara.valorSentenca * Math.pow(1 + taxaMensal, meses);
+}
+
+function fmtBRL(v) {
+  if (!v || isNaN(v)) return 'R$ —';
+  return 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+// ── STATS ─────────────────────────────────────────────────────
+function atualizarStatsAlvaras() {
+  const aguardando = dadosAlvaras.filter(a => a.status !== 'Recebido');
+  const recebidos  = dadosAlvaras.filter(a => a.status === 'Recebido');
+
+  const totalValorAguardando = aguardando.reduce((s,a) => s + (a.valorSentenca||0), 0);
+  const totalValorRecebido   = recebidos.reduce((s,a)  => s + (a.valorRecebido||a.valorSentenca||0), 0);
+  const totalAtualizado      = dadosAlvaras.filter(a => a.status !== 'Recebido')
+                                           .reduce((s,a) => s + (calcularValorAtualizado(a)||a.valorSentenca||0), 0);
+
+  document.getElementById('alv-aguardando').textContent = aguardando.length;
+  document.getElementById('alv-val-aguardando').textContent = fmtBRL(totalValorAguardando);
+  document.getElementById('alv-recebido').textContent = recebidos.length;
+  document.getElementById('alv-val-recebido').textContent = fmtBRL(totalValorRecebido);
+  document.getElementById('alv-total').textContent = dadosAlvaras.length;
+  document.getElementById('alv-val-total').textContent = fmtBRL(totalValorAguardando + totalValorRecebido);
+  document.getElementById('alv-val-atualizado-total').textContent = fmtBRL(totalAtualizado);
+}
+
+// ── RENDER TABELA ─────────────────────────────────────────────
+function renderAlvaras() {
+  const busca  = (document.getElementById('alvBusca')?.value || '').toLowerCase();
+  const status = document.getElementById('alvFiltroStatus')?.value || '';
+
+  const f = dadosAlvaras.filter(a => {
+    if (status && a.status !== status) return false;
+    if (busca) {
+      const txt = (a.processo+a.nome+a.condominio+a.garantidora+a.cpf).toLowerCase();
+      if (!txt.includes(busca)) return false;
+    }
+    return true;
+  });
+
+  const wrap = document.getElementById('alvTableContent');
+  if (!f.length) {
+    wrap.innerHTML = '<div class="state"><div class="state-icon">✓</div><div class="state-title">Nenhum resultado</div></div>';
+    return;
+  }
+
+  let h = `<table>
+    <thead><tr>
+      <th>Processo</th><th>Nome / Parte</th><th>Origem</th>
+      <th>Valor Sentença</th><th>Valor Atualizado (est.)</th>
+      <th>Status</th><th>Andamento</th>
+    </tr></thead><tbody>`;
+
+  f.forEach(a => {
+    const lk   = 'https://www.jusbrasil.com.br/busca?q=' + encodeURIComponent(a.processo);
+    const stat = a.status === 'Recebido'
+      ? '<span class="alv-badge-status status-recebido">✓ Recebido</span>'
+      : '<span class="alv-badge-status status-aguardando">⏳ Aguardando</span>';
+
+    const valAt = calcularValorAtualizado(a);
+    const valAtStr = valAt
+      ? '<div class="valor-atualizado">' + fmtBRL(valAt) + '</div><div class="valor-original">' + (a.tribunal||'') + '</div>'
+      : '<span style="color:var(--text-muted);font-size:12px">Sem data base</span>';
+
+    const idParte = a.tipo === 'Garantidora'
+      ? (a.condominio ? a.condominio + (a.apt ? ' · Apt ' + a.apt : '') : a.nome)
+      : a.nome;
+
+    // Andamento resumido
+    const etapas = [];
+    if (a.dataProcuracao)   etapas.push('Proc: ' + a.dataProcuracao);
+    if (a.dadosBancarios)   etapas.push('Banco: ' + a.dadosBancarios);
+    if (a.dataExpedicao)    etapas.push('Exp: ' + a.dataExpedicao);
+    if (a.dataRecebimento)  etapas.push('Rec: ' + a.dataRecebimento);
+    const andamento = etapas.length ? etapas.join('<br>') : '<span style="color:var(--text-muted);font-size:11px">—</span>';
+
+    h += `<tr>
+      <td class="td-num">
+        <a href="${lk}" target="_blank">${a.processo}</a>
+        <div class="td-tribunal">${a.tribunal}</div>
+      </td>
+      <td>
+        <div style="font-size:13px;color:var(--text);font-weight:500">${idParte}</div>
+        <div style="font-size:11px;color:var(--text-dim)">${a.nome !== idParte ? a.nome : ''}</div>
+        <div style="font-size:10px;color:var(--text-muted)">${a.garantidora ? a.garantidora : (a.cpf||'')}</div>
+      </td>
+      <td>
+        <div style="font-size:12px;color:var(--text)">${a.origem||'—'}</div>
+        <div style="font-size:11px;color:var(--text-dim)">${a.dataOrigem||''}</div>
+      </td>
+      <td style="font-size:13px;font-weight:600;color:var(--text)">${fmtBRL(a.valorSentenca)}</td>
+      <td>${valAtStr}</td>
+      <td>${stat}
+        ${a.status==='Recebido' && a.valorRecebido ? '<div style="font-size:11px;color:var(--green);margin-top:4px">'+fmtBRL(a.valorRecebido)+'</div>' : ''}
+      </td>
+      <td style="font-size:11px;color:var(--text-dim);line-height:1.6">${andamento}</td>
+    </tr>`;
+  });
+
+  h += '</tbody></table>';
+  wrap.innerHTML = h;
+}
+
+// ── FORMULÁRIO ────────────────────────────────────────────────
+function abrirFormAlvara() {
+  document.getElementById('alvFormWrap').classList.add('open');
+  document.getElementById('alvFormWrap').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function fecharFormAlvara() {
+  document.getElementById('alvFormWrap').classList.remove('open');
+  limparFormAlvara();
+}
+
+function trocarTipoParte() {
+  const tipo = document.getElementById('fTipoParte').value;
+  const els  = ['camposGarantidora','camposCliente'];
+  els.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      // Mostra/esconde os filhos do div
+      el.childNodes.forEach(child => {
+        if (child.classList) {
+          child.style.display = (id === 'camposGarantidora' && tipo === 'Garantidora') ||
+                                 (id === 'camposCliente'    && tipo === 'Cliente Direto') ? '' : 'none';
+        }
+      });
+    }
+  });
+}
+
+function detectarTribunalForm() {
+  const proc = document.getElementById('fProcesso').value;
+  let trib = 'TJMG';
+  if (/\.8\.13\./.test(proc))  trib = 'TJMG';
+  else if (/\.8\.26\./.test(proc)) trib = 'TJSP';
+  else if (/\.5\.03\./.test(proc)) trib = 'TRT-3/MG';
+  else if (/\.4\.01\./.test(proc)) trib = 'TRF-1';
+  document.getElementById('fTribunal').value = trib;
+}
+
+function limparFormAlvara() {
+  ['fTipoParte','fGarantidora','fCondominio','fBloco','fApt','fTipoAcao',
+   'fNome','fCpf','fProcesso','fTribunal','fOrigem','fDataOrigem',
+   'fValorSentenca','fDataProcuracao','fDataDadosBanc','fDataExpedicao',
+   'fDataRecebimento','fValorRecebido','fObs'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('fStatus').textContent = '';
+}
+
+async function salvarAlvara() {
+  const st = document.getElementById('fStatus');
+
+  // Validação básica
+  if (!document.getElementById('fTipoParte').value) { st.textContent = '⚠ Selecione o tipo de parte.'; st.style.color='var(--red)'; return; }
+  if (!document.getElementById('fNome').value)      { st.textContent = '⚠ Nome é obrigatório.'; st.style.color='var(--red)'; return; }
+  if (!document.getElementById('fProcesso').value)  { st.textContent = '⚠ Número do processo é obrigatório.'; st.style.color='var(--red)'; return; }
+  if (!document.getElementById('fDataOrigem').value){ st.textContent = '⚠ Data da sentença/decisão é obrigatória.'; st.style.color='var(--red)'; return; }
+  if (!document.getElementById('fValorSentenca').value){ st.textContent = '⚠ Valor da sentença é obrigatório.'; st.style.color='var(--red)'; return; }
+
+  const dados = {
+    acao: 'cadastrar',
+    tipo:           document.getElementById('fTipoParte').value,
+    garantidora:    document.getElementById('fGarantidora')?.value || '',
+    condominio:     document.getElementById('fCondominio')?.value || '',
+    bloco:          document.getElementById('fBloco')?.value || '',
+    apt:            document.getElementById('fApt')?.value || '',
+    nome:           document.getElementById('fNome').value,
+    cpf:            document.getElementById('fCpf').value,
+    processo:       document.getElementById('fProcesso').value,
+    origem:         document.getElementById('fOrigem').value,
+    dataOrigem:     document.getElementById('fDataOrigem').value,
+    valorSentenca:  document.getElementById('fValorSentenca').value.replace(',','.'),
+    dataProcuracao: document.getElementById('fDataProcuracao').value,
+    dadosBancarios: document.getElementById('fDataDadosBanc').value,
+    dataExpedicao:  document.getElementById('fDataExpedicao').value,
+    dataRecebimento:document.getElementById('fDataRecebimento').value,
+    valorRecebido:  document.getElementById('fValorRecebido').value.replace(',','.'),
+    observacao:     document.getElementById('fObs').value
+  };
+
+  if (!WEB_APP_URL) {
+    // Sem Web App: instrui o usuário a cadastrar na planilha
+    st.textContent = '⚠ Web App não configurado. Cadastre diretamente na planilha.';
+    st.style.color = 'var(--amber)';
+    window.open('https://docs.google.com/spreadsheets/d/' + ALV_SHEET_ID, '_blank');
+    return;
+  }
+
+  st.textContent = 'Salvando...';
+  st.style.color = 'var(--text-dim)';
+
+  try {
+    const resp = await fetch(WEB_APP_URL, {
+      method: 'POST',
+      body: JSON.stringify(dados)
+    });
+    const res = await resp.json();
+    if (res.ok) {
+      st.textContent = '✓ Salvo com sucesso!';
+      st.style.color = 'var(--green)';
+      setTimeout(() => { fecharFormAlvara(); carregarAlvaras(); }, 1500);
+    } else {
+      st.textContent = '❌ Erro: ' + res.erro;
+      st.style.color = 'var(--red)';
+    }
+  } catch(e) {
+    st.textContent = '❌ Erro de conexão.';
+    st.style.color = 'var(--red)';
+  }
 }
 
 window.addEventListener('load', carregarDados);
