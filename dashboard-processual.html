@@ -517,38 +517,55 @@ td { padding: 12px 16px; vertical-align: middle; }
 
   /* ── LOGIN ── */
   .login-overlay {
-    position:fixed; inset:0; background:var(--bg);
+    position:fixed; inset:0; background:#0d1117;
     display:flex; align-items:center; justify-content:center;
     z-index:9999;
   }
   .login-box {
-    background:var(--surface); border:1px solid var(--border);
-    border-radius:16px; padding:40px 48px; width:360px;
-    display:flex; flex-direction:column; align-items:center; gap:20px;
-    box-shadow:0 24px 64px rgba(0,0,0,.4);
+    background:#161b27; border:1px solid #1f2a3d;
+    border-radius:18px; padding:44px 48px; width:360px;
+    display:flex; flex-direction:column; align-items:center; gap:22px;
+    box-shadow:0 32px 80px rgba(0,0,0,.5);
   }
   .login-icon {
-    width:52px; height:44px;
-    background:linear-gradient(135deg,var(--amber),var(--amber2));
-    border-radius:12px; display:flex; align-items:center;
-    justify-content:center; font-weight:700; font-size:13px; color:#000;
+    width:58px; height:58px;
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    border-radius:16px; display:flex; align-items:center;
+    justify-content:center; font-weight:700; font-size:15px; color:#fff;
+    letter-spacing:.04em; box-shadow:0 8px 24px rgba(37,99,235,.35);
   }
-  .login-title { font-size:18px; font-weight:700; color:var(--text); text-align:center; }
-  .login-sub { font-size:13px; color:var(--text-dim); text-align:center; margin-top:-10px; }
+  .login-title {
+    font-size:20px; font-weight:700; color:#f1f5f9;
+    text-align:center; letter-spacing:-.01em; margin-bottom:-8px;
+  }
+  .login-sub {
+    font-size:11px; color:#475569; text-align:center;
+    text-transform:uppercase; letter-spacing:.1em; font-weight:500;
+  }
+  .login-input-wrap { position:relative; width:100%; }
   .login-input {
-    width:100%; background:var(--surface2); border:1px solid var(--border2);
-    border-radius:var(--radius-sm); padding:11px 14px;
-    font-family:var(--font); font-size:14px; color:var(--text);
-    outline:none; transition:border-color .15s; text-align:center; letter-spacing:.1em;
+    width:100%; background:#1e2740; border:1px solid #263352;
+    border-radius:10px; padding:13px 44px 13px 16px;
+    font-family:var(--font); font-size:14px; color:#e2e8f0;
+    outline:none; transition:border-color .2s;
   }
-  .login-input:focus { border-color:var(--amber); }
+  .login-input::placeholder { color:#3d5166; }
+  .login-input:focus { border-color:#2563eb; }
+  .login-eye {
+    position:absolute; right:14px; top:50%; transform:translateY(-50%);
+    cursor:pointer; color:#475569; font-size:16px; user-select:none;
+    transition:color .15s;
+  }
+  .login-eye:hover { color:#94a3b8; }
   .login-btn {
-    width:100%; padding:12px; background:var(--amber); color:#000;
-    border:none; border-radius:var(--radius-sm); font-size:14px;
-    font-weight:600; cursor:pointer; transition:all .15s; font-family:var(--font);
+    width:100%; padding:13px; background:#2563eb; color:#fff;
+    border:none; border-radius:10px; font-size:15px;
+    font-weight:600; cursor:pointer; transition:all .2s;
+    font-family:var(--font); letter-spacing:.01em;
   }
-  .login-btn:hover { background:var(--amber2); }
-  .login-error { font-size:12px; color:var(--red); display:none; }
+  .login-btn:hover { background:#1d4ed8; box-shadow:0 4px 16px rgba(37,99,235,.4); }
+  .login-btn:active { transform:scale(.98); }
+  .login-error { font-size:12px; color:#f87171; display:none; margin-top:-8px; }
 
 </style>
 </head>
@@ -559,15 +576,16 @@ td { padding: 12px 16px; vertical-align: middle; }
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-icon">CRC</div>
-    <div>
-      <div class="login-title">CRC - Monitor Processual</div>
-      <div class="login-sub">Cardoso Rosa & Capuzzo</div>
+    <div class="login-title">CRC - Monitor Processual</div>
+    <div class="login-sub">Cardoso Rosa & Capuzzo</div>
+    <div class="login-input-wrap">
+      <input class="login-input" type="password" id="loginSenha"
+             placeholder="Senha"
+             onkeydown="if(event.key==='Enter') verificarSenha()">
+      <span class="login-eye" id="loginEye" onclick="toggleSenha()">👁</span>
     </div>
-    <input class="login-input" type="password" id="loginSenha"
-           placeholder="••••••••••••"
-           onkeydown="if(event.key==='Enter') verificarSenha()">
-    <button class="login-btn" onclick="verificarSenha()">Entrar</button>
     <div class="login-error" id="loginErro">Senha incorreta. Tente novamente.</div>
+    <button class="login-btn" onclick="verificarSenha()">Entrar</button>
   </div>
 </div>
 
@@ -1567,6 +1585,18 @@ async function salvarAlvara() {
 
 
 // ── SENHA ────────────────────────────────────────────────────
+window.toggleSenha = function() {
+  const input = document.getElementById('loginSenha');
+  const eye   = document.getElementById('loginEye');
+  if (input.type === 'password') {
+    input.type = 'text';
+    eye.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    eye.textContent = '👁';
+  }
+};
+
 window.verificarSenha = function() {
   const SENHA = '1500Brasil';
   const val = document.getElementById('loginSenha').value;
